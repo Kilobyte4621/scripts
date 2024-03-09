@@ -143,25 +143,18 @@ incremented_char="001"
 		echo -e "backup_number;backup_name;start_timestamp;end_timestamp;success_status;failure_reason;rsync_log_filename" # Adding headers to the file in case it doesn't exist
 } > "$CSV_LOG_FILE" ## Create CSV file with headers
 else # Get the number of the last backup
+User
 # Get the last line of the file
 		last_line=$(tail -n 1 "$CSV_LOG_FILE")
 # Extract the first character of the last line
     first_char=$(echo "$last_line" | cut -c1-3)
 # Check if the first character is a digit
-if [ -n "$first_char" ]; then
-    # Extract the numeric part of first_char
-    numeric_part=$(echo "$first_char" | grep -o '[0-9]*')
-
-    # Check if numeric_part is not empty
-    if [ -n "$numeric_part" ]; then
-        # Increment the numeric part
-        incremented_numeric=$((numeric_part + 1))
-
-        # Format incremented_numeric with three digits
-        incremented_char_formatted=$(printf "%03d" "$incremented_numeric")
-    fi
+				if [[ "$first_char" =~ [0-9] ]]; then
+# Increment the first character
+        incremented_char=$((first_char + 1))
+				fi
 fi #End of else in the case it exists
-echo "$incremented_char_formatted;$SCRIPT_NAME;$TIMESTAMP_CSV;$TIMESTAMP_CSV_E;$success_status;$failure_reason;$RSYNC_FILENAME" >> "$CSV_LOG_FILE" ## Append data to log CSV file
+echo "$incremented_char;$SCRIPT_NAME;$TIMESTAMP_CSV;$TIMESTAMP_CSV_E;$success_status;$failure_reason;$RSYNC_FILENAME" >> "$CSV_LOG_FILE" ## Append data to log CSV file
 
 } # Ended defining csvfilewrite function
 
