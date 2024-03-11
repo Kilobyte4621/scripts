@@ -20,19 +20,6 @@ install_packages() {
     echo "Packages installed successfully."
 }
 
-# Function to configure system settings
-configure_system() {
-    echo "Configuring system settings..."
-    # Add your system configuration commands here
-    echo "System configured successfully."
-}
-
-# Function to set up environment
-setup_environment() {
-    echo "Setting up environment..."
-    # Add commands to set up your environment (e.g., environment variables, directories)
-    echo "Environment set up successfully."
-}
 
 # Function to create snapper config
 create_snapper_config() {
@@ -161,8 +148,6 @@ main() {
     start_syncthing_service
     add_syncthing_to_firewall
     install_portainer
-    configure_system
-    setup_environment
 
     echo "Post-installation process completed successfully."
 }
