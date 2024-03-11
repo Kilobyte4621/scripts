@@ -126,10 +126,8 @@ start_syncthing_service() {
 # Function to add Syncthing's services to the firewall public zone
 add_syncthing_to_firewall() {
     echo "Adding Syncthing's services to the firewall public zone..."
-    sudo firewall-cmd --permanent --add-port=22000/tcp
-    sudo firewall-cmd --permanent --add-port=22000/udp
-    sudo firewall-cmd --permanent --add-port=21027/udp
-    sudo firewall-cmd --permanent --add-port=8384/tcp
+    sudo firewall-cmd --permanent --add-service=syncthing
+    sudo firewall-cmd --permanent --add-service=syncthing-gui
     sudo firewall-cmd --reload
     echo "Syncthing's services added to the firewall public zone successfully."
 }
