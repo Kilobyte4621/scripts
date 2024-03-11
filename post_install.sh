@@ -16,7 +16,7 @@ install_packages() {
     echo "Installing necessary packages..."
     # Install necessary packages
     sudo dnf update -y
-    sudo dnf install -y dnf-plugin-tracer snapper python3-dnf-plugin-snapper dnf-automatic cockpit-navigator cockpit-machines
+    sudo dnf install -y dnf-plugin-tracer snapper python3-dnf-plugin-snapper dnf-automatic cockpit cockpit-machines cockpit-navigator dnf-plugins-core
     echo "Packages installed successfully."
 }
 
@@ -78,6 +78,33 @@ modify_logind_conf() {
     echo "logind.conf modified successfully."
 }
 
+# Function to install Docker and related packages
+install_docker() {
+    echo "Installing Docker and related packages..."
+    # Install Docker and related packages
+    sudo dnf -y install dnf-plugins-core
+    sudo dnf config-manager --add-repo https://download.docker.com/linux/fedora/docker-ce.repo
+    sudo dnf install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose docker-compose-plugin
+    echo "Docker and related packages installed successfully."
+}
+
+# Function to start and enable Docker service
+start_docker_service() {
+    echo "Starting and enabling Docker service..."
+    # Start and enable Docker service
+    sudo systemctl start docker
+    sudo systemctl enable docker.service
+    sudo systemctl enable containerd.service
+    echo "Docker service started and enabled successfully."
+}
+
+# Function to enable linger for user to start Docker on boot
+enable_docker_on_startup() {
+    echo "Enabling Docker to run on startup..."
+    sudo loginctl enable-linger "$(whoami)"
+    echo "Docker enabled to run on startup."
+}
+
 # Main function to execute post-install tasks
 main() {
     edit_dnf_conf
@@ -87,6 +114,9 @@ main() {
     setup_dnf_automatic
     enable_dnf_automatic_timer
     modify_logind_conf
+    install_docker
+    enable_docker_on_startup
+    start_docker_service
     configure_system
     setup_environment
 
