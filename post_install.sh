@@ -16,7 +16,7 @@ install_packages() {
     echo "Installing necessary packages..."
     # Install necessary packages
     sudo dnf update -y
-    sudo dnf install -y dnf-plugin-tracer snapper python3-dnf-plugin-snapper dnf-automatic
+    sudo dnf install -y dnf-plugin-tracer snapper python3-dnf-plugin-snapper dnf-automatic cockpit-navigator cockpit-machines
     echo "Packages installed successfully."
 }
 
@@ -60,6 +60,24 @@ setup_dnf_automatic() {
     echo "dnf-automatic configured successfully."
 }
 
+# Function to enable and start dnf-automatic.timer
+enable_dnf_automatic_timer() {
+    echo "Enabling and starting dnf-automatic.timer..."
+    # Enable and start dnf-automatic.timer
+    sudo systemctl enable --now dnf-automatic.timer
+    echo "dnf-automatic.timer enabled and started successfully."
+}
+
+# Function to modify /etc/systemd/logind.conf
+modify_logind_conf() {
+    echo "Modifying /etc/systemd/logind.conf..."
+    # Modify logind.conf file
+    sudo sed -i 's/^#HandleSuspendKey=suspend/HandleSuspendKey=ignore/' /etc/systemd/logind.conf
+    sudo sed -i 's/^#HandleLidSwitch=suspend/HandleLidSwitch=ignore/' /etc/systemd/logind.conf
+    sudo sed -i 's/^#HandleLidSwitchDocked=ignore/HandleLidSwitchDocked=ignore/' /etc/systemd/logind.conf
+    echo "logind.conf modified successfully."
+}
+
 # Main function to execute post-install tasks
 main() {
     edit_dnf_conf
@@ -67,6 +85,8 @@ main() {
     create_snapper_config
     set_timeline_create
     setup_dnf_automatic
+    enable_dnf_automatic_timer
+    modify_logind_conf
     configure_system
     setup_environment
 
