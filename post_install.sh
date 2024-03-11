@@ -135,13 +135,6 @@ install_portainer() {
     echo "Portainer installed and configured successfully."
 }
 
-# Function to edit sudoers file to provide password feedback
-edit_sudoers_file() {
-    echo "Editing sudoers file..."
-    echo "$(whoami) ALL=(ALL) PASSWD: ALL" | sudo tee -a /etc/sudoers
-    echo "Password feedback enabled for sudo."
-}
-
 # Main function to execute post-install tasks
 main() {
     edit_dnf_conf
