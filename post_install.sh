@@ -148,7 +148,6 @@ main() {
     start_syncthing_service
     add_syncthing_to_firewall
     install_portainer
-
     echo "Post-installation process completed successfully."
 }
 
