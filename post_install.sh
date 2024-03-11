@@ -20,7 +20,6 @@ install_packages() {
     echo "Packages installed successfully."
 }
 
-
 # Function to create snapper config
 create_snapper_config() {
     echo "Creating Snapper config..."
@@ -63,6 +62,10 @@ modify_logind_conf() {
     sudo sed -i 's/^#HandleLidSwitch=suspend/HandleLidSwitch=ignore/' /etc/systemd/logind.conf
     sudo sed -i 's/^#HandleLidSwitchDocked=ignore/HandleLidSwitchDocked=ignore/' /etc/systemd/logind.conf
     echo "logind.conf modified successfully."
+    # Restart the login service
+    echo "Restarting systemd-logind.service..."
+    sudo systemctl restart systemd-logind.service
+    echo "systemd-logind.service restarted successfully."
 }
 
 # Function to install Docker and related packages
@@ -132,6 +135,13 @@ install_portainer() {
     echo "Portainer installed and configured successfully."
 }
 
+# Function to edit sudoers file to provide password feedback
+edit_sudoers_file() {
+    echo "Editing sudoers file..."
+    echo "$(whoami) ALL=(ALL) PASSWD: ALL" | sudo tee -a /etc/sudoers
+    echo "Password feedback enabled for sudo."
+}
+
 # Main function to execute post-install tasks
 main() {
     edit_dnf_conf
@@ -148,6 +158,7 @@ main() {
     start_syncthing_service
     add_syncthing_to_firewall
     install_portainer
+
     echo "Post-installation process completed successfully."
 }
 
