@@ -123,13 +123,26 @@ start_syncthing_service() {
     echo "Syncthing service started successfully."
 }
 
-# Function to add Syncthing's services to the firewall public zone
+# Function to add Syncthing's services to the firewall
 add_syncthing_to_firewall() {
     echo "Adding Syncthing's services to the firewall public zone..."
-    sudo firewall-cmd --permanent --add-service=syncthing --add-port=22000/tcp --add-port=22000/udp --add-port=21027/udp
-    sudo firewall-cmd --permanent --add-service=syncthing-gui --add-port=8384/tcp
+    sudo firewall-cmd --permanent --add-service=syncthing
+    sudo firewall-cmd --permanent --add-service=syncthing-gui
     sudo firewall-cmd --reload
     echo "Syncthing's services added to the firewall public zone successfully."
+}
+
+# Function to install Portainer
+install_portainer() {
+    echo "Installing Portainer..."
+    # Create firewall rule for Portainer
+    sudo firewall-cmd --permanent --add-service=portainer --add-port=9443/tcp --add-port=8000/tcp
+    sudo firewall-cmd --reload
+    # Create volume for Portainer
+    sudo docker volume create portainer_data
+    # Install Portainer Community Edition
+    sudo docker run --privileged=true -d -p 8000:8000 -p 9443:9443 --name portainer --restart=always -v /var/run/docker.sock:/var/run/docker.sock -v portainer_data:/data portainer/portainer-ce:latest
+    echo "Portainer installed and configured successfully."
 }
 
 # Main function to execute post-install tasks
@@ -147,6 +160,7 @@ main() {
     install_syncthing
     start_syncthing_service
     add_syncthing_to_firewall
+    install_portainer
     configure_system
     setup_environment
 
