@@ -16,7 +16,7 @@ install_packages() {
     echo "Installing necessary packages..."
     # Install necessary packages
     sudo dnf update -y
-    sudo dnf install -y dnf-plugin-tracer snapper python3-dnf-plugin-snapper dnf-automatic cockpit cockpit-machines cockpit-navigator dnf-plugins-core
+    sudo dnf install -y dnf-plugin-tracer snapper python3-dnf-plugin-snapper dnf-automatic cockpit cockpit-machines cockpit-navigator dnf-plugins-core nano
     echo "Packages installed successfully."
 }
 
