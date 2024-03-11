@@ -105,6 +105,35 @@ enable_docker_on_startup() {
     echo "Docker enabled to run on startup."
 }
 
+# Function to install Syncthing
+install_syncthing() {
+    echo "Installing Syncthing..."
+    # Increase the number of watches on the OS
+    echo "fs.inotify.max_user_watches=204800" | sudo tee -a /etc/sysctl.conf
+    sudo sysctl -p
+    # Install Syncthing
+    sudo dnf install syncthing -y
+    echo "Syncthing installed successfully."
+}
+
+# Function to start Syncthing as a system service
+start_syncthing_service() {
+    echo "Starting Syncthing as a system service..."
+    sudo systemctl enable --now syncthing@$(whoami).service
+    echo "Syncthing service started successfully."
+}
+
+# Function to add Syncthing's services to the firewall public zone
+add_syncthing_to_firewall() {
+    echo "Adding Syncthing's services to the firewall public zone..."
+    sudo firewall-cmd --permanent --add-port=22000/tcp
+    sudo firewall-cmd --permanent --add-port=22000/udp
+    sudo firewall-cmd --permanent --add-port=21027/udp
+    sudo firewall-cmd --permanent --add-port=8384/tcp
+    sudo firewall-cmd --reload
+    echo "Syncthing's services added to the firewall public zone successfully."
+}
+
 # Main function to execute post-install tasks
 main() {
     edit_dnf_conf
@@ -117,6 +146,9 @@ main() {
     install_docker
     enable_docker_on_startup
     start_docker_service
+    install_syncthing
+    start_syncthing_service
+    add_syncthing_to_firewall
     configure_system
     setup_environment
 
