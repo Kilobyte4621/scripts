@@ -1,2 +1,2 @@
-# bashs
- bash scripts for linux desktops and servers
+# scripts
+ scripts for linux desktops and servers
