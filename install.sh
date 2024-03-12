@@ -112,14 +112,15 @@ main() {
     modify_file /etc/systemd/logind.conf "#HandleLidSwitchDocked=ignore" "HandleLidSwitchDocked=ignore"
 
     add_to_file /etc/dnf/dnf.conf "fastestmirror=True" "max_parallel_downloads=20" "deltarpm=True" "defaultyes=True"
+
+    install_packages "snapper" "python3-dnf-plugin-snapper"
+    sudo snapper create-config /
+    modify_file /etc/snapper/configs/root "^TIMELINE_CREATE=.*" "TIMELINE_CREATE=\"yes\""
     
     install_packages "dnf-plugin-tracer" "dnf-plugins-core" "cockpit-navigator" "cockpit-machines" "nano"
     
     setup_dnf_auto
     
-    install_packages "snapper" "python3-dnf-plugin-snapper"
-    sudo snapper create-config /
-    modify_file /etc/snapper/configs/root "^TIMELINE_CREATE=.*" "TIMELINE_CREATE=\"yes\""
     
     setup_services "syncthing@$(whoami).service"
     setup_firewall "syncthing" "syncthing-gui"
