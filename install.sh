@@ -136,7 +136,7 @@ install_basic_packages() {
         case $choice in
             1) basic_packages_to_install+=( "snapper" "python3-dnf-plugin-snapper" );;
             2) basic_packages_to_install+=( "dnf-plugin-tracer" "dnf-plugins-core" "dnf-automatic" );;
-            3) basic_packages_to_install+=( "cockpit-navigator" "cockpit-machines" );;
+            3) basic_packages_to_install+=( "cockpit-navigator" "cockpit-machines" "libguestfs-tools" );;
             4) basic_packages_to_install+=( "nano" );;
             *) echo "Invalid choice: $choice" ;;
         esac
