@@ -95,7 +95,7 @@ main() {
     for choice in "${additional_packages[@]}"; do
         case $choice in
             1) install_packages "syncthing" && setup_services "syncthing@$(whoami).service" && setup_firewall "syncthing" "syncthing-gui" ;;
-            2) install_packages "docker-ce" "docker-ce-cli" "containerd.io" "docker-buildx-plugin" "docker-compose" "docker-compose-plugin" && sudo loginctl enable-linger "$(whoami)" && setup_services "docker" "containerd" && install_portainer ;;
+            2) install_packages "docker-ce" "docker-ce-cli" "containerd.io" "docker-buildx-plugin" "docker-compose" "docker-compose-plugin" && sudo loginctl enable-linger "$(whoami)" && sudo systemctl start docker && setup_services "docker" "containerd" && install_portainer ;;
             3) echo "No additional software selected." ;;
             *) echo "Invalid choice: $choice" ;;
         esac
