@@ -114,9 +114,8 @@ install_syncthing() {
     echo "Syncthing installed successfully."
 }
 
-
-# Main function to execute post-install tasks
-main() {
+# Function to execute post-install tasks for basic packages
+install_basic_packages() {
     modify_file /etc/systemd/logind.conf "#HandleSuspendKey=suspend" "HandleSuspendKey=ignore"
     modify_file /etc/systemd/logind.conf "#HandleLidSwitch=suspend" "HandleLidSwitch=ignore"
     modify_file /etc/systemd/logind.conf "#HandleLidSwitchDocked=ignore" "HandleLidSwitchDocked=ignore"
@@ -131,7 +130,7 @@ main() {
     echo "4. Nano"
     read -p "Enter your choice (comma-separated, e.g., 1,2,3): " basic_choices
     IFS=',' read -ra basic_packages <<< "$basic_choices"
-
+    
     declare -a basic_packages_to_install=()
     for choice in "${basic_packages[@]}"; do
         case $choice in
@@ -144,20 +143,26 @@ main() {
     done
 
     install_packages "${basic_packages_to_install[@]}"
-
+    
     setup_dnf_auto
-
+    
     setup_services "cockpit"  # Cockpit service
-
+    
     echo "Basic packages installed and configured successfully."
 }
 
 # Main function to execute post-install tasks
 main() {
-    install_basic_packages
+    # Install basic packages
+    echo "Do you want to install basic packages? (yes/no)"
+    read install_basic
+    if [ "$install_basic" == "yes" ]; then
+        install_basic_packages
+    else
+        echo "Skipping installation of basic packages."
+    fi
 
-
-
+    # Install additional software suites
     echo "Choose additional software suites to install:"
     echo "1. Syncthing"
     echo "2. Docker and Portainer"
@@ -167,8 +172,8 @@ main() {
 
     for choice in "${additional_packages[@]}"; do
         case $choice in
-            1) install_packages "syncthing" && setup_services "syncthing@$(whoami).service" && setup_firewall "syncthing" "syncthing-gui" ;;
-            2) install_packages "docker-ce" "docker-ce-cli" "containerd.io" "docker-buildx-plugin" "docker-compose" "docker-compose-plugin" && sudo loginctl enable-linger "$(whoami)" && sudo systemctl start docker && setup_services "docker" "containerd" && install_portainer ;;
+            1) install_syncthing && setup_services "syncthing@$(whoami).service" && setup_firewall "syncthing" "syncthing-gui" ;;
+            2) install_packages "docker-ce" "docker-ce-cli" "containerd.io" "docker-buildx-plugin" "docker-compose" "docker-compose-plugin" && sudo loginctl enable-linger "$(whoami)" && setup_services "docker" "containerd" && install_portainer ;;
             3) echo "No additional software selected." ;;
             *) echo "Invalid choice: $choice" ;;
         esac
