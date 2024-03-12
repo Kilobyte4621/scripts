@@ -25,30 +25,39 @@ edit_dnf_conf() {
     echo "Lines added to /etc/dnf/dnf.conf successfully."
 }
 
+
+# Upgrade packages
+    echo "Upgrading packages..."
+    sudo dnf upgrade -y --refresh
+    echo "Packages upgraded successfully."
+
+
+# Function to install and configure Snapper
+install_snapper() {
+    echo "Installing and configuring Snapper..."
+    # Install Snapper and its Python plugin
+    sudo dnf install -y snapper python3-dnf-plugin-snapper
+    # Create Snapper config
+    sudo snapper create-config /
+    # Set TIMELINE_CREATE to "yes" in Snapper config
+    sudo sed -i 's/^TIMELINE_CREATE=.*/TIMELINE_CREATE="yes"/' /etc/snapper/configs/root
+    echo "Snapper installed and configured successfully."
+}
+
 # Function to install necessary packages
 install_packages() {
     echo "Installing necessary packages..."
-    # Install necessary packages
-    sudo dnf update -y --refresh
-    sudo dnf install -y dnf-plugin-tracer snapper python3-dnf-plugin-snapper dnf-automatic cockpit-machines cockpit-navigator dnf-plugins-core nano
+    # Install dnf plugins
+    sudo dnf install -y dnf-plugin-tracer dnf-plugins-core dnf-automatic
+    # Install Cockpit Navigator
+    sudo dnf install -y cockpit-navigator
+    # Install Cockpit Machines
+    sudo dnf install -y cockpit-machines
+    # Install Nano
+    sudo dnf install -y nano
     echo "Packages installed successfully."
 }
 
-# Function to create snapper config
-create_snapper_config() {
-    echo "Creating Snapper config..."
-    # Run snapper command to create config
-    sudo snapper create-config /
-    echo "Snapper config created successfully."
-}
-
-# Function to ensure TIMELINE_CREATE is set to "yes" in snapper config
-set_timeline_create() {
-    echo "Setting TIMELINE_CREATE to \"yes\" in snapper config..."
-    # Add or replace TIMELINE_CREATE option in /etc/snapper/configs/root
-    sudo sed -i 's/^TIMELINE_CREATE=.*/TIMELINE_CREATE="yes"/' /etc/snapper/configs/root
-    echo "TIMELINE_CREATE set to \"yes\" in snapper config."
-}
 
 # Function to setup dnf-automatic
 setup_dnf_automatic() {
@@ -168,6 +177,7 @@ EOF
 main() {
     modify_logind_conf
     edit_dnf_conf
+    install_snapper
     install_packages
     create_snapper_config
     set_timeline_create
