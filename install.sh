@@ -70,31 +70,6 @@ setup_dnf_auto() {
     echo "dnf-automatic.timer enabled and started successfully."
 }
 
-
-# Function to setup Docker
-setup_docker() {
-    echo "Setting up Docker..."
-
-    # Install Docker and related packages
-    sudo dnf -y install dnf-plugins-core
-    sudo dnf config-manager --add-repo https://download.docker.com/linux/fedora/docker-ce.repo
-    sudo dnf install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose docker-compose-plugin
-    echo "Docker and related packages installed successfully."
-
-    # Enable Docker to run on startup
-    echo "Enabling Docker to run on startup..."
-    sudo loginctl enable-linger "$(whoami)"
-    echo "Docker enabled to run on startup."
-
-    # Start and enable Docker service
-    echo "Starting and enabling Docker service..."
-    sudo systemctl start docker
-    sudo systemctl enable docker.service
-    sudo systemctl enable containerd.service
-    echo "Docker service started and enabled successfully."
-}
-
-
 # Function to install Syncthing, start its service, and add firewall rules
 setup_syncthing() {
     echo "Setting up Syncthing..."
@@ -120,6 +95,28 @@ setup_syncthing() {
     echo "Syncthing's services added to the firewall public zone successfully."
 }
 
+# Function to setup Docker
+setup_docker() {
+    echo "Setting up Docker..."
+
+    # Install Docker and related packages
+    sudo dnf -y install dnf-plugins-core
+    sudo dnf config-manager --add-repo https://download.docker.com/linux/fedora/docker-ce.repo
+    sudo dnf install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose docker-compose-plugin
+    echo "Docker and related packages installed successfully."
+
+    # Enable Docker to run on startup
+    echo "Enabling Docker to run on startup..."
+    sudo loginctl enable-linger "$(whoami)"
+    echo "Docker enabled to run on startup."
+
+    # Start and enable Docker service
+    echo "Starting and enabling Docker service..."
+    sudo systemctl start docker
+    sudo systemctl enable docker.service
+    sudo systemctl enable containerd.service
+    echo "Docker service started and enabled successfully."
+}
 
 # Function to install Portainer
 install_portainer() {
