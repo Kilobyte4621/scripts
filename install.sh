@@ -1,5 +1,19 @@
 #!/bin/bash
 
+# Function to modify /etc/systemd/logind.conf to change laptop close lid behaviour
+modify_logind_conf() {
+    echo "Modifying /etc/systemd/logind.conf..."
+    # Modify logind.conf file
+    sudo sed -i 's/^#HandleSuspendKey=suspend/HandleSuspendKey=ignore/' /etc/systemd/logind.conf
+    sudo sed -i 's/^#HandleLidSwitch=suspend/HandleLidSwitch=ignore/' /etc/systemd/logind.conf
+    sudo sed -i 's/^#HandleLidSwitchDocked=ignore/HandleLidSwitchDocked=ignore/' /etc/systemd/logind.conf
+    echo "logind.conf modified successfully."
+    # Restart the login service
+    echo "Restarting systemd-logind.service..."
+    sudo systemctl restart systemd-logind.service
+    echo "systemd-logind.service restarted successfully."
+}
+
 # Function to add lines to /etc/dnf/dnf.conf file
 edit_dnf_conf() {
     echo "Editing /etc/dnf/dnf.conf..."
@@ -54,19 +68,6 @@ enable_dnf_automatic_timer() {
     echo "dnf-automatic.timer enabled and started successfully."
 }
 
-# Function to modify /etc/systemd/logind.conf
-modify_logind_conf() {
-    echo "Modifying /etc/systemd/logind.conf..."
-    # Modify logind.conf file
-    sudo sed -i 's/^#HandleSuspendKey=suspend/HandleSuspendKey=ignore/' /etc/systemd/logind.conf
-    sudo sed -i 's/^#HandleLidSwitch=suspend/HandleLidSwitch=ignore/' /etc/systemd/logind.conf
-    sudo sed -i 's/^#HandleLidSwitchDocked=ignore/HandleLidSwitchDocked=ignore/' /etc/systemd/logind.conf
-    echo "logind.conf modified successfully."
-    # Restart the login service
-    echo "Restarting systemd-logind.service..."
-    sudo systemctl restart systemd-logind.service
-    echo "systemd-logind.service restarted successfully."
-}
 
 # Function to install Docker and related packages
 install_docker() {
@@ -78,6 +79,15 @@ install_docker() {
     echo "Docker and related packages installed successfully."
 }
 
+
+# Function to enable linger for user to start Docker on boot
+enable_docker_on_startup() {
+    echo "Enabling Docker to run on startup..."
+    sudo loginctl enable-linger "$(whoami)"
+    echo "Docker enabled to run on startup."
+}
+
+
 # Function to start and enable Docker service
 start_docker_service() {
     echo "Starting and enabling Docker service..."
@@ -86,13 +96,6 @@ start_docker_service() {
     sudo systemctl enable docker.service
     sudo systemctl enable containerd.service
     echo "Docker service started and enabled successfully."
-}
-
-# Function to enable linger for user to start Docker on boot
-enable_docker_on_startup() {
-    echo "Enabling Docker to run on startup..."
-    sudo loginctl enable-linger "$(whoami)"
-    echo "Docker enabled to run on startup."
 }
 
 # Function to install Syncthing
@@ -163,13 +166,13 @@ EOF
 
 # Main function to execute post-install tasks
 main() {
+    modify_logind_conf
     edit_dnf_conf
     install_packages
     create_snapper_config
     set_timeline_create
     setup_dnf_automatic
     enable_dnf_automatic_timer
-    modify_logind_conf
     install_docker
     enable_docker_on_startup
     start_docker_service
