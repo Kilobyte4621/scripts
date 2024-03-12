@@ -78,29 +78,23 @@ enable_dnf_automatic_timer() {
 }
 
 
-# Function to install Docker and related packages
-install_docker() {
-    echo "Installing Docker and related packages..."
+# Function to setup Docker
+setup_docker() {
+    echo "Setting up Docker..."
+
     # Install Docker and related packages
     sudo dnf -y install dnf-plugins-core
     sudo dnf config-manager --add-repo https://download.docker.com/linux/fedora/docker-ce.repo
     sudo dnf install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose docker-compose-plugin
     echo "Docker and related packages installed successfully."
-}
 
-
-# Function to enable linger for user to start Docker on boot
-enable_docker_on_startup() {
+    # Enable Docker to run on startup
     echo "Enabling Docker to run on startup..."
     sudo loginctl enable-linger "$(whoami)"
     echo "Docker enabled to run on startup."
-}
 
-
-# Function to start and enable Docker service
-start_docker_service() {
-    echo "Starting and enabling Docker service..."
     # Start and enable Docker service
+    echo "Starting and enabling Docker service..."
     sudo systemctl start docker
     sudo systemctl enable docker.service
     sudo systemctl enable containerd.service
@@ -181,9 +175,7 @@ main() {
     install_packages
     setup_dnf_automatic
     enable_dnf_automatic_timer
-    install_docker
-    enable_docker_on_startup
-    start_docker_service
+    setup_docker
     setup_syncthing
     install_portainer
 
