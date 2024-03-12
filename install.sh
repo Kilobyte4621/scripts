@@ -107,8 +107,15 @@ EOF
     echo "Portainer installed and configured successfully."
 }
 
-# Main function to execute post-install tasks
-main() {
+# Function to install Syncthing
+install_syncthing() {
+    echo "Installing Syncthing..."
+    install_packages "syncthing"
+    echo "Syncthing installed successfully."
+}
+
+# Function to execute post-install tasks for basic packages
+install_basic_packages() {
     modify_file /etc/systemd/logind.conf "#HandleSuspendKey=suspend" "HandleSuspendKey=ignore"
     modify_file /etc/systemd/logind.conf "#HandleLidSwitch=suspend" "HandleLidSwitch=ignore"
     modify_file /etc/systemd/logind.conf "#HandleLidSwitchDocked=ignore" "HandleLidSwitchDocked=ignore"
@@ -144,17 +151,24 @@ main() {
     echo "Basic packages installed and configured successfully."
 }
 
-# Display software suites to install
-echo "Choose the software suites to install:"
-echo "1. Basic packages"
-echo "2. Syncthing"
-echo "3. Docker and Portainer"
-read -p "Enter your choice (1/2/3): " choice
+# Main function to execute post-install tasks
+main() {
+    install_basic_packages
 
-# Call the main function based on user's choice
-case $choice in
-    1) main ;;
-    2) main && setup_services "syncthing@$(whoami).service" && setup_firewall "syncthing" "syncthing-gui" ;;
-    3) main && setup_services "docker" "containerd" && install_portainer ;;
-    *) echo "Invalid choice. Exiting..." && exit 1 ;;
-esac
+    echo "Choose additional software suites to install:"
+    echo "1. Syncthing"
+    echo "2. Docker and Portainer"
+    read -p "Enter your choice (comma-separated, e.g., 1,2): " additional_choices
+    IFS=',' read -ra additional_packages <<< "$additional_choices"
+
+    for choice in "${additional_packages[@]}"; do
+        case $choice in
+            1) install_syncthing && setup_services "syncthing@$(whoami).service" && setup_firewall "syncthing" "syncthing-gui" ;;
+            2) install_packages "docker-ce" "docker-ce-cli" "containerd.io" "docker-buildx-plugin" "docker-compose" "docker-compose-plugin" && sudo loginctl enable-linger "$(whoami)" && setup_services "docker" "containerd" && install_portainer ;;
+            *) echo "Invalid choice: $choice" ;;
+        esac
+    done
+}
+
+# Call the main function
+main
