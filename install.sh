@@ -125,27 +125,41 @@ add_syncthing_to_firewall() {
 # Function to install Portainer
 install_portainer() {
     echo "Installing Portainer..."
-    # Create the Portainer service file
+    # Create the Portainer service files
     sudo tee /etc/firewalld/services/portainer.xml > /dev/null <<EOF
 <?xml version="1.0" encoding="utf-8"?>
 <service>
   <short>Portainer</short>
   <description>Portainer service</description>
-  <port protocol="tcp" port="9443"/>
   <port protocol="tcp" port="8000"/>
 </service>
 EOF
+
+    sudo tee /etc/firewalld/services/portainer-gui.xml > /dev/null <<EOF
+<?xml version="1.0" encoding="utf-8"?>
+<service>
+  <short>Portainer GUI</short>
+  <description>Portainer GUI service</description>
+  <port protocol="tcp" port="9443"/>
+</service>
+EOF
+
     # Reload firewall to apply the changes
     sudo firewall-cmd --reload    
-    # Create firewall rule for Portainer
+
+    # Create firewall rules for Portainer
     sudo firewall-cmd --permanent --add-service=portainer
+    sudo firewall-cmd --permanent --add-service=portainer-gui
     sudo firewall-cmd --reload
+
     # Create volume for Portainer
     sudo docker volume create portainer_data
+
     # Install Portainer Community Edition
     sudo docker run --privileged=true -d -p 8000:8000 -p 9443:9443 --name portainer --restart=always -v /var/run/docker.sock:/var/run/docker.sock -v portainer_data:/data portainer/portainer-ce:latest
     echo "Portainer installed and configured successfully."
 }
+
 
 # Main function to execute post-install tasks
 main() {
