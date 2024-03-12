@@ -23,17 +23,14 @@ edit_dnf_conf() {
     echo "deltarpm=True" | sudo tee -a /etc/dnf/dnf.conf
     echo "defaultyes=True" | sudo tee -a /etc/dnf/dnf.conf
     echo "Lines added to /etc/dnf/dnf.conf successfully."
-}
-
-
-# Upgrade packages
+    # Upgrade packages
     echo "Upgrading packages..."
     sudo dnf upgrade -y --refresh
     echo "Packages upgraded successfully."
-
+}
 
 # Function to install and configure Snapper
-install_snapper() {
+setup_snapper() {
     echo "Installing and configuring Snapper..."
     # Install Snapper and its Python plugin
     sudo dnf install -y snapper python3-dnf-plugin-snapper
@@ -48,7 +45,7 @@ install_snapper() {
 install_packages() {
     echo "Installing necessary packages..."
     # Install dnf plugins
-    sudo dnf install -y dnf-plugin-tracer dnf-plugins-core dnf-automatic
+    sudo dnf install -y dnf-plugin-tracer dnf-plugins-core
     # Install Cockpit Navigator
     sudo dnf install -y cockpit-navigator
     # Install Cockpit Machines
@@ -58,21 +55,17 @@ install_packages() {
     echo "Packages installed successfully."
 }
 
-
 # Function to setup dnf-automatic
-setup_dnf_automatic() {
+setup_dnf_auto() {
     echo "Setting up dnf-automatic..."
     # Configure dnf-automatic
     sudo sed -i 's/^apply_updates =.*/apply_updates = yes/' /etc/dnf/automatic.conf
     sudo sed -i 's/^reboot =.*/reboot = when-needed/' /etc/dnf/automatic.conf
     sudo sed -i "s/^reboot_command =.*/reboot_command = \"shutdown -r +500 'Rebooting after applying package updates'\"/" /etc/dnf/automatic.conf
     echo "dnf-automatic configured successfully."
-}
 
-# Function to enable and start dnf-automatic.timer
-enable_dnf_automatic_timer() {
-    echo "Enabling and starting dnf-automatic.timer..."
     # Enable and start dnf-automatic.timer
+    echo "Enabling and starting dnf-automatic.timer..."
     sudo systemctl enable --now dnf-automatic.timer
     echo "dnf-automatic.timer enabled and started successfully."
 }
@@ -171,10 +164,9 @@ EOF
 main() {
     modify_logind_conf
     edit_dnf_conf
-    install_snapper
+    setup_snapper
     install_packages
-    setup_dnf_automatic
-    enable_dnf_automatic_timer
+    setup_dnf_auto
     setup_docker
     setup_syncthing
     install_portainer
