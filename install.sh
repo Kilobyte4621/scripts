@@ -167,8 +167,8 @@ main() {
     setup_snapper
     install_packages
     setup_dnf_auto
-    setup_docker
     setup_syncthing
+    setup_docker
     install_portainer
 
     echo "Post-installation process completed successfully."
