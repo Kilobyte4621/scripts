@@ -125,8 +125,20 @@ add_syncthing_to_firewall() {
 # Function to install Portainer
 install_portainer() {
     echo "Installing Portainer..."
+    # Create the Portainer service file
+    sudo tee /etc/firewalld/services/portainer.xml > /dev/null <<EOF
+<?xml version="1.0" encoding="utf-8"?>
+<service>
+  <short>Portainer</short>
+  <description>Portainer service</description>
+  <port protocol="tcp" port="9443"/>
+  <port protocol="tcp" port="8000"/>
+</service>
+EOF
+    # Reload firewall to apply the changes
+    sudo firewall-cmd --reload    
     # Create firewall rule for Portainer
-    sudo firewall-cmd --permanent --add-service=portainer --add-port=9443/tcp --add-port=8000/tcp
+    sudo firewall-cmd --permanent --add-service=portainer
     sudo firewall-cmd --reload
     # Create volume for Portainer
     sudo docker volume create portainer_data
