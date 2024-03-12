@@ -16,14 +16,16 @@ modify_file() {
     echo "$file modified successfully."
 }
 
-# Function to add lines to a file
+# Function to add lines to a file if they don't already exist
 add_to_file() {
     local file="$1"
     local lines=("${@:2}")
     
     echo "Adding lines to $file..."
     for line in "${lines[@]}"; do
-        echo "$line" | sudo tee -a "$file" > /dev/null
+        if ! grep -qF "$line" "$file"; then
+            echo "$line" | sudo tee -a "$file" > /dev/null
+        fi
     done
     echo "Lines added to $file successfully."
 }
