@@ -107,32 +107,32 @@ start_docker_service() {
     echo "Docker service started and enabled successfully."
 }
 
-# Function to install Syncthing
-install_syncthing() {
-    echo "Installing Syncthing..."
+
+# Function to install Syncthing, start its service, and add firewall rules
+setup_syncthing() {
+    echo "Setting up Syncthing..."
+
     # Increase the number of watches on the OS
     echo "fs.inotify.max_user_watches=204800" | sudo tee -a /etc/sysctl.conf
     sudo sysctl -p
+
     # Install Syncthing
     sudo dnf install syncthing -y
     echo "Syncthing installed successfully."
-}
 
-# Function to start Syncthing as a system service
-start_syncthing_service() {
+    # Start Syncthing as a system service
     echo "Starting Syncthing as a system service..."
     sudo systemctl enable --now syncthing@$(whoami).service
     echo "Syncthing service started successfully."
-}
 
-# Function to add Syncthing's services to the firewall
-add_syncthing_to_firewall() {
+    # Add Syncthing's services to the firewall
     echo "Adding Syncthing's services to the firewall public zone..."
     sudo firewall-cmd --permanent --add-service=syncthing
     sudo firewall-cmd --permanent --add-service=syncthing-gui
     sudo firewall-cmd --reload
     echo "Syncthing's services added to the firewall public zone successfully."
 }
+
 
 # Function to install Portainer
 install_portainer() {
@@ -179,16 +179,12 @@ main() {
     edit_dnf_conf
     install_snapper
     install_packages
-    create_snapper_config
-    set_timeline_create
     setup_dnf_automatic
     enable_dnf_automatic_timer
     install_docker
     enable_docker_on_startup
     start_docker_service
-    install_syncthing
-    start_syncthing_service
-    add_syncthing_to_firewall
+    setup_syncthing
     install_portainer
 
     echo "Post-installation process completed successfully."
