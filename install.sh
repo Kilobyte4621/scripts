@@ -76,6 +76,45 @@ setup_firewall() {
     echo "Services added to the firewall public zone successfully."
 }
 
+# Function to install Portainer
+install_portainer() {
+    echo "Installing Portainer..."
+    sudo tee /etc/firewalld/services/portainer.xml > /dev/null <<EOF
+<?xml version="1.0" encoding="utf-8"?>
+<service>
+  <short>Portainer</short>
+  <description>Portainer service</description>
+  <port protocol="tcp" port="8000"/>
+</service>
+EOF
+
+    sudo tee /etc/firewalld/services/portainer-gui.xml > /dev/null <<EOF
+<?xml version="1.0" encoding="utf-8"?>
+<service>
+  <short>Portainer GUI</short>
+  <description>Portainer GUI service</description>
+  <port protocol="tcp" port="9443"/>
+</service>
+EOF
+
+    sudo firewall-cmd --reload    
+
+    setup_firewall "portainer" "portainer-gui"
+
+    sudo docker volume create portainer_data
+
+    sudo docker run --privileged=true -d -p 8000:8000 -p 9443:9443 --name portainer --restart=always -v /var/run/docker.sock:/var/run/docker.sock -v portainer_data:/data portainer/portainer-ce:latest
+    echo "Portainer installed and configured successfully."
+}
+
+# Function to install Syncthing
+install_syncthing() {
+    echo "Installing Syncthing..."
+    install_packages "syncthing"
+    echo "Syncthing installed successfully."
+}
+
+
 # Main function to execute post-install tasks
 main() {
     modify_file /etc/systemd/logind.conf "#HandleSuspendKey=suspend" "HandleSuspendKey=ignore"
@@ -84,6 +123,40 @@ main() {
 
     add_to_file /etc/dnf/dnf.conf "fastestmirror=True" "max_parallel_downloads=20" "deltarpm=True" "defaultyes=True"
     sudo dnf upgrade --refresh -y
+
+    echo "Choose the basic packages to install:"
+    echo "1. Snapper"
+    echo "2. DNF plugins"
+    echo "3. Cockpit"
+    echo "4. Nano"
+    read -p "Enter your choice (comma-separated, e.g., 1,2,3): " basic_choices
+    IFS=',' read -ra basic_packages <<< "$basic_choices"
+
+    declare -a basic_packages_to_install=()
+    for choice in "${basic_packages[@]}"; do
+        case $choice in
+            1) basic_packages_to_install+=( "snapper" "python3-dnf-plugin-snapper" );;
+            2) basic_packages_to_install+=( "dnf-plugin-tracer" "dnf-plugins-core" "dnf-automatic" );;
+            3) basic_packages_to_install+=( "cockpit-navigator" "cockpit-machines" );;
+            4) basic_packages_to_install+=( "nano" );;
+            *) echo "Invalid choice: $choice" ;;
+        esac
+    done
+
+    install_packages "${basic_packages_to_install[@]}"
+
+    setup_dnf_auto
+
+    setup_services "cockpit"  # Cockpit service
+
+    echo "Basic packages installed and configured successfully."
+}
+
+# Main function to execute post-install tasks
+main() {
+    install_basic_packages
+
+
 
     echo "Choose additional software suites to install:"
     echo "1. Syncthing"
