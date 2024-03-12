@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Script to perform post-installation tasks on Fedora/CentOS systems
+
 set -e  # Exit immediately if any command fails
 
 # Function to modify a file
@@ -114,25 +116,45 @@ main() {
     add_to_file /etc/dnf/dnf.conf "fastestmirror=True" "max_parallel_downloads=20" "deltarpm=True" "defaultyes=True"
     sudo dnf upgrade --refresh -y
 
-    install_packages "snapper" "python3-dnf-plugin-snapper"
-    sudo snapper create-config /
-    modify_file /etc/snapper/configs/root "^TIMELINE_CREATE=.*" "TIMELINE_CREATE=\"yes\""
+    echo "Choose the basic packages to install:"
+    echo "1. Snapper"
+    echo "2. DNF plugins"
+    echo "3. Cockpit"
+    echo "4. Nano"
+    read -p "Enter your choice (comma-separated, e.g., 1,2,3): " basic_choices
+    IFS=',' read -ra basic_packages <<< "$basic_choices"
     
-    install_packages "dnf-plugin-tracer" "dnf-plugins-core" "dnf-automatic" "cockpit-navigator" "cockpit-machines" "nano" "syncthing"
+    declare -a basic_packages_to_install=()
+    for choice in "${basic_packages[@]}"; do
+        case $choice in
+            1) basic_packages_to_install+=( "snapper" );;
+            2) basic_packages_to_install+=( "dnf-plugin-tracer" "dnf-plugins-core" "python3-dnf-plugin-snapper" );;
+            3) basic_packages_to_install+=( "cockpit-navigator" "cockpit-machines" );;
+            4) basic_packages_to_install+=( "nano" );;
+            *) echo "Invalid choice: $choice" ;;
+        esac
+    done
+
+    install_packages "${basic_packages_to_install[@]}"
     
     setup_dnf_auto
     
-    setup_services "syncthing@$(whoami).service"
-    setup_firewall "syncthing" "syncthing-gui"
+    setup_services "cockpit"  # Cockpit service
     
-    install_packages "docker-ce" "docker-ce-cli" "containerd.io" "docker-buildx-plugin" "docker-compose" "docker-compose-plugin"
-    sudo loginctl enable-linger "$(whoami)"
-    setup_services "docker" "containerd"
-    
-    install_portainer
-
-    echo "Post-installation process completed successfully."
+    echo "Basic packages installed and configured successfully."
 }
 
-# Call the main function
-main
+# Display software suites to install
+echo "Choose the software suites to install:"
+echo "1. Basic packages"
+echo "2. Syncthing"
+echo "3. Docker and Portainer"
+read -p "Enter your choice (1/2/3): " choice
+
+# Call the main function based on user's choice
+case $choice in
+    1) main ;;
+    2) main && setup_services "syncthing@$(whoami).service" && setup_firewall "syncthing" "syncthing-gui" ;;
+    3) main && setup_services "docker" "containerd" && install_portainer ;;
+    *) echo "Invalid choice. Exiting..." && exit 1 ;;
+esac
