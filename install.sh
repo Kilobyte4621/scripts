@@ -42,7 +42,7 @@ setup_dnf_automatic() {
     # Configure dnf-automatic
     sudo sed -i 's/^apply_updates =.*/apply_updates = yes/' /etc/dnf/automatic.conf
     sudo sed -i 's/^reboot =.*/reboot = when-needed/' /etc/dnf/automatic.conf
-    sudo sed -i 's/^reboot_command =.*/reboot_command = "shutdown -r +500 'Rebooting after applying package updates'"/' /etc/dnf/automatic.conf
+    sudo sed -i "s/^reboot_command =.*/reboot_command = \"shutdown -r +500 'Rebooting after applying package updates'\"/" /etc/dnf/automatic.conf
     echo "dnf-automatic configured successfully."
 }
 
