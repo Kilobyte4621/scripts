@@ -2,7 +2,7 @@
  scripts for linux desktops and servers
 
 # install.sh
-This is a post-installation script that optimizes Fedora Server installations. What it does?
+This is a post-installation script that optimizes Fedora Server installations. What does it do?
 
 - Changes laptop lid closing behaviour, so that the symtem does not stop or hibernate once the laptop screen lid is closed, in case your bare metal machine is a laptop.
 - Optimizes DNF to increase the number o max paralel downloads to 20, use fastest mirror, use delta rpm (for faster transactions), and changes the default type of answering dnf to yes.
