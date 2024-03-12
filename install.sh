@@ -112,22 +112,22 @@ main() {
     modify_file /etc/systemd/logind.conf "#HandleLidSwitchDocked=ignore" "HandleLidSwitchDocked=ignore"
 
     add_to_file /etc/dnf/dnf.conf "fastestmirror=True" "max_parallel_downloads=20" "deltarpm=True" "defaultyes=True"
+    sudo dnf upgrade --refresh -y
 
     install_packages "snapper" "python3-dnf-plugin-snapper"
     sudo snapper create-config /
     modify_file /etc/snapper/configs/root "^TIMELINE_CREATE=.*" "TIMELINE_CREATE=\"yes\""
     
-    install_packages "dnf-plugin-tracer" "dnf-plugins-core" "cockpit-navigator" "cockpit-machines" "nano"
+    install_packages "dnf-plugin-tracer" "dnf-plugins-core" "dnf-automatic" "cockpit-navigator" "cockpit-machines" "nano" "syncthing"
     
     setup_dnf_auto
-    
     
     setup_services "syncthing@$(whoami).service"
     setup_firewall "syncthing" "syncthing-gui"
     
-    setup_services "docker" "containerd"
     install_packages "docker-ce" "docker-ce-cli" "containerd.io" "docker-buildx-plugin" "docker-compose" "docker-compose-plugin"
     sudo loginctl enable-linger "$(whoami)"
+    setup_services "docker" "containerd"
     
     install_portainer
 
