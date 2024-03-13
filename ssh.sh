@@ -51,112 +51,22 @@ MaxAuthTries 3
 LoginGraceTime 20s
 
 # Set banner message
-Banner /etc/issue.net
+Banner /etc/ssh_issue.txt
 
 # Enable strict modes
 StrictModes yes
 
+# Enable TCP forwarding
+AllowTcpForwarding yes
+
 # Disable X11 forwarding
 X11Forwarding no
-
-# Disable TCP forwarding
-AllowTcpForwarding no
 
 # Set MaxStartups to prevent DoS attacks
 MaxStartups 10:30:100
 
-# Set SSH Port (change to desired port, if necessary)
-#Port 22
-
 # Allow only specific users to login
-AllowUsers user1 user2
-
-# Allow only specific groups to login
-#AllowGroups group1 group2
-
-# Disable host-based authentication
-#HostbasedAuthentication no
-
-# Set SSH idle timeout for login sessions
-#LoginGraceTime 1m
-
-# Enable public key authentication
-#PubkeyAuthentication yes
-
-# Disable SSH password hashing
-#UsePAM no
-
-# Set GSSAPI authentication
-#GSSAPIAuthentication yes
-#GSSAPICleanupCredentials no
-
-# Set KbdInteractiveAuthentication
-#KbdInteractiveAuthentication no
-
-# Set SSH PermitEmptyPasswords
-#PermitEmptyPasswords no
-
-# Set SSH PermitUserEnvironment
-#PermitUserEnvironment no
-
-# Set SSH AllowAgentForwarding
-#AllowAgentForwarding no
-
-# Set SSH UsePrivilegeSeparation
-#UsePrivilegeSeparation sandbox
-
-# Set SSH Compression
-#Compression delayed
-
-# Set SSH TCPKeepAlive
-#TCPKeepAlive yes
-
-# Set SSH ClientAliveInterval and ClientAliveCountMax
-#ClientAliveInterval 300
-#ClientAliveCountMax 0
-
-# Set SSH UseDNS
-#UseDNS yes
-
-# Set SSH IgnoreRhosts
-#IgnoreRhosts yes
-
-# Set SSH PermitRootLogin without-password
-#PermitRootLogin without-password
-
-# Set SSH AllowTcpForwarding
-#AllowTcpForwarding yes
-
-# Set SSH AllowTcpForwarding with X11Forwarding
-#AllowTcpForwarding yes
-#X11Forwarding yes
-
-# Set SSH PrintMotd
-#PrintMotd no
-
-# Set SSH PrintLastLog
-#PrintLastLog yes
-
-# Set SSH UseDNS
-#UseDNS yes
-
-# Set SSH PasswordAuthentication
-#PasswordAuthentication no
-
-# Set SSH PermitRootLogin
-#PermitRootLogin no
-
-# Set SSH Banner
-#Banner /etc/issue.net
-
-# Set SSH AllowGroups
-#AllowGroups sshusers
-
-# Set SSH AllowUsers
-#AllowUsers user1 user2
-
-# Set SSH AuthorizedKeysFile
-#AuthorizedKeysFile .ssh/authorized_keys
+AllowUsers user
 
 EOF
 
