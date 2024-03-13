@@ -123,31 +123,27 @@ install_syncthing() {
 
 # Function to execute post-install tasks for basic packages
 install_basic_packages() {
-    modify_file /etc/systemd/logind.conf "#HandleSuspendKey=suspend" "HandleSuspendKey=ignore"
-    modify_file /etc/systemd/logind.conf "#HandleLidSwitch=suspend" "HandleLidSwitch=ignore"
-    modify_file /etc/systemd/logind.conf "#HandleLidSwitchDocked=ignore" "HandleLidSwitchDocked=ignore"
-
-    add_to_file /etc/dnf/dnf.conf "fastestmirror=True" "max_parallel_downloads=20" "deltarpm=True" "defaultyes=True"
-    sudo dnf upgrade --refresh -y
-
-    echo "Choose the basic packages to install:"
-    echo "1. Snapper"
-    echo "2. DNF plugins"
-    echo "3. Cockpit"
-    echo "4. Nano"
-    read -p "Enter your choice (comma-separated, e.g., 1,2,3): " basic_choices
-    IFS=',' read -ra basic_packages <<< "$basic_choices"
-    
     declare -a basic_packages_to_install=()
-    for choice in "${basic_packages[@]}"; do
-        case $choice in
-            1) basic_packages_to_install+=( "snapper" "python3-dnf-plugin-snapper" );;
-            2) basic_packages_to_install+=( "dnf-plugin-tracer" "dnf-plugins-core" "dnf-automatic" "NetworkManager-tui" );;
-            3) basic_packages_to_install+=( "cockpit-navigator" "cockpit-machines" "libguestfs-tools" );;
-            4) basic_packages_to_install+=( "nano" );;
-            *) echo "Invalid choice: $choice" ;;
-        esac
-    done
+
+    if [ "$INSTALL_SNAPPER" == "yes" ]; then
+        basic_packages_to_install+=( "snapper" "python3-dnf-plugin-snapper" )
+    fi
+    
+    if [ "$INSTALL_DNF_PLUGINS" == "yes" ]; then
+        basic_packages_to_install+=( "dnf-plugin-tracer" "dnf-plugins-core" "dnf-automatic" "NetworkManager-tui" )
+    fi
+    
+    if [ "$INSTALL_COCKPIT_NAVIGATOR" == "yes" ]; then
+        basic_packages_to_install+=( "cockpit-navigator" )
+    fi
+    
+    if [ "$INSTALL_COCKPIT_MACHINES" == "yes" ]; then
+        basic_packages_to_install+=( "cockpit-machines" "libguestfs-tools" )
+    fi
+    
+    if [ "$INSTALL_NANO" == "yes" ]; then
+        basic_packages_to_install+=( "nano" )
+    fi
 
     install_packages "${basic_packages_to_install[@]}"
     
@@ -159,38 +155,18 @@ install_basic_packages() {
 # Main function to execute post-install tasks
 main() {
     # Install basic packages
-    echo "Do you want to install basic packages? (yes/no)"
-    read install_basic
-    if [ "$install_basic" == "yes" ]; then
-        install_basic_packages
-    else
-        echo "Skipping installation of basic packages."
-    fi
+    install_basic_packages
 
     # Install additional software suites
-    echo "Choose additional software suites to install:"
-    echo "1. Syncthing"
-    echo "2. Docker and Portainer"
-    echo "3. None (Continue without installing additional software)"
-    read -p "Enter your choice (comma-separated, e.g., 1,2,3): " additional_choices
-    IFS=',' read -ra additional_packages <<< "$additional_choices"
+    if [ "$INSTALL_SYNCTHING" == "yes" ]; then
+        install_syncthing && setup_services "syncthing@$(whoami).service" && setup_firewall "syncthing" "syncthing-gui"
+    fi
+    
+    if [ "$INSTALL_PORTAINER_DOCKER" == "yes" ]; then
+        install_packages "docker-ce" "docker-ce-cli" "containerd.io" "docker-buildx-plugin" "docker-compose" "docker-compose-plugin" && sudo loginctl enable-linger "$(whoami)" && setup_services "docker" "containerd" && install_portainer
+    fi
 
-    for choice in "${additional_packages[@]}"; do
-        case $choice in
-            1) if [ "$INSTALL_SYNCTHING" == "yes" ]; then
-                   install_syncthing && setup_services "syncthing@$(whoami).service" && setup_firewall "syncthing" "syncthing-gui"
-               else
-                   echo "Syncthing installation skipped."
-               fi ;;
-            2) if [ "$INSTALL_PORTAINER_DOCKER" == "yes" ]; then
-                   install_packages "docker-ce" "docker-ce-cli" "containerd.io" "docker-buildx-plugin" "docker-compose" "docker-compose-plugin" && sudo loginctl enable-linger "$(whoami)" && setup_services "docker" "containerd" && install_portainer
-               else
-                   echo "Portainer+Docker installation skipped."
-               fi ;;
-            3) echo "No additional software selected." ;;
-            *) echo "Invalid choice: $choice" ;;
-        esac
-    done
+    echo "Installation completed."
 }
 
 # Call the main function
