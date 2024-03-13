@@ -146,8 +146,6 @@ install_basic_packages() {
     
     setup_dnf_auto
     
-    setup_services "cockpit"  # Cockpit service
-    
     echo "Basic packages installed and configured successfully."
 }
 
