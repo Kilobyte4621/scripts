@@ -1,8 +1,15 @@
 #!/bin/bash
 
-# Script to perform post-installation tasks on Fedora/CentOS systems
-
-set -e  # Exit immediately if any command fails
+# Define variables to choose which software to install
+INSTALL_SNAPPER="yes"
+INSTALL_DNF_PLUGINS="yes"
+INSTALL_DNF_AUTOMATIC="yes"
+INSTALL_NETWORK_MANAGER_TUI="yes"
+INSTALL_COCKPIT_NAVIGATOR="yes"
+INSTALL_COCKPIT_MACHINES="yes"
+INSTALL_NANO="yes"
+INSTALL_PORTAINER_DOCKER="yes"
+INSTALL_SYNCTHING="yes"
 
 # Function to modify a file
 modify_file() {
@@ -170,8 +177,16 @@ main() {
 
     for choice in "${additional_packages[@]}"; do
         case $choice in
-            1) install_syncthing && setup_services "syncthing@$(whoami).service" && setup_firewall "syncthing" "syncthing-gui" ;;
-            2) install_packages "docker-ce" "docker-ce-cli" "containerd.io" "docker-buildx-plugin" "docker-compose" "docker-compose-plugin" && sudo loginctl enable-linger "$(whoami)" && setup_services "docker" "containerd" && install_portainer ;;
+            1) if [ "$INSTALL_SYNCTHING" == "yes" ]; then
+                   install_syncthing && setup_services "syncthing@$(whoami).service" && setup_firewall "syncthing" "syncthing-gui"
+               else
+                   echo "Syncthing installation skipped."
+               fi ;;
+            2) if [ "$INSTALL_PORTAINER_DOCKER" == "yes" ]; then
+                   install_packages "docker-ce" "docker-ce-cli" "containerd.io" "docker-buildx-plugin" "docker-compose" "docker-compose-plugin" && sudo loginctl enable-linger "$(whoami)" && setup_services "docker" "containerd" && install_portainer
+               else
+                   echo "Portainer+Docker installation skipped."
+               fi ;;
             3) echo "No additional software selected." ;;
             *) echo "Invalid choice: $choice" ;;
         esac
