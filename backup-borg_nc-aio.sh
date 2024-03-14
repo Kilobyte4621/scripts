@@ -148,11 +148,17 @@ else # Get the number of the last backup
 		last_line=$(tail -n 1 "$CSV_LOG_FILE")
 # Extract the first character of the last line
     first_char=$(echo "$last_line" | cut -c1-3)
+    
 # Check if the first character is a digit
-				if [[ "$first_char" =~ [0-9] ]]; then
-# Increment the first character
-        incremented_char=$((first_char + 1))
-				fi
+if [[ "$first_char" =~ [0-9] ]]; then
+    # Extract the first character as a number
+    first_digit=$(printf "%d" "'$first_char")
+    # Increment the first digit
+    incremented_digit=$((first_digit + 1))
+    # Convert back to character
+    incremented_char=$(printf "\\$(printf %o "$incremented_digit")")
+fi
+
 fi #End of else in the case it exists
 echo "$incremented_char;$SCRIPT_NAME;$TIMESTAMP_CSV;$TIMESTAMP_CSV_E;$success_status;$failure_reason;$RSYNC_FILENAME" >> "$CSV_LOG_FILE" ## Append data to log CSV file
 
