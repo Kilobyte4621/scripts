@@ -143,7 +143,7 @@ incremented_char="001"
 		echo -e "backup_number;backup_name;start_timestamp;end_timestamp;success_status;failure_reason;rsync_log_filename" # Adding headers to the file in case it doesn't exist
 } > "$CSV_LOG_FILE" ## Create CSV file with headers
 else # Get the number of the last backup
-User
+
 # Get the last line of the file
 		last_line=$(tail -n 1 "$CSV_LOG_FILE")
 # Extract the first character of the last line
