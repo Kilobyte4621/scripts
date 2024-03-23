@@ -2,6 +2,8 @@
  scripts for linux desktops and servers
 
 # install.sh
+´curl -sSL https://raw.githubusercontent.com/Kilobyte4621/scripts/main/install.sh | bash´
+
 This is a post-installation script that optimizes Fedora Server installations. What does it do?
 
 - Changes laptop lid closing behaviour, so that the symtem does not stop or hibernate once the laptop screen lid is closed, in case your bare metal machine is a laptop.
