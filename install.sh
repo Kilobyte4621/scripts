@@ -39,6 +39,15 @@ add_to_file() {
     echo "Lines added to $file successfully."
 }
 
+# Function to add lines to /etc/dnf/dnf.conf file
+edit_dnf_conf() {
+    local dnf_conf="/etc/dnf/dnf.conf"
+    echo "Editing $dnf_conf..."
+    # Add lines to /etc/dnf/dnf.conf file
+    add_to_file "$dnf_conf" "fastestmirror=True" "max_parallel_downloads=20" "deltarpm=True" "defaultyes=True"
+    echo "Configuration updated successfully in $dnf_conf."
+}
+
 # Function to install packages
 install_packages() {
     local packages=("$@")
@@ -154,6 +163,8 @@ install_basic_packages() {
 
 # Main function to execute post-install tasks
 main() {
+    # Edit dnf_conf
+    edit_dnf_conf
     # Install basic packages
     install_basic_packages
 
