@@ -155,6 +155,8 @@ install_basic_packages() {
     fi
 
     install_packages "${basic_packages_to_install[@]}"
+
+    sudo snapper create-config /
     
     setup_dnf_auto
     
