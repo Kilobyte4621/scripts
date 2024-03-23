@@ -46,6 +46,7 @@ edit_dnf_conf() {
     # Add lines to /etc/dnf/dnf.conf file
     add_to_file "$dnf_conf" "fastestmirror=True" "max_parallel_downloads=20" "deltarpm=True" "defaultyes=True"
     echo "Configuration updated successfully in $dnf_conf."
+    sudo dnf upgrade --refresh -y
 }
 
 # Function to install packages
