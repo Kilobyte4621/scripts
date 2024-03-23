@@ -85,6 +85,10 @@ setup_firewall() {
 
 # Function to install Portainer
 install_portainer() {
+    echo "Adding Docker repository..."
+    sudo dnf -y install dnf-plugins-core
+    sudo dnf config-manager --add-repo https://download.docker.com/linux/fedora/docker-ce.repo
+
     echo "Installing Portainer..."
     sudo tee /etc/firewalld/services/portainer.xml > /dev/null <<EOF
 <?xml version="1.0" encoding="utf-8"?>
