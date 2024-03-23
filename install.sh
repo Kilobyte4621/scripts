@@ -157,6 +157,8 @@ install_basic_packages() {
     install_packages "${basic_packages_to_install[@]}"
 
     sudo snapper create-config /
+
+    echo "Snapper installed and configured successfully."
     
     setup_dnf_auto
     
