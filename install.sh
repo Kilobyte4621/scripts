@@ -39,14 +39,7 @@ add_to_file() {
     echo "Lines added to $file successfully."
 }
 
-# Function to add lines to /etc/dnf/dnf.conf file
-edit_dnf_conf() {
-    local dnf_conf="/etc/dnf/dnf.conf"
-    echo "Editing $dnf_conf..."
-    # Add lines to /etc/dnf/dnf.conf file
-    add_to_file "$dnf_conf" "fastestmirror=True" "max_parallel_downloads=20" "deltarpm=True" "defaultyes=True"
-    echo "Configuration updated successfully in $dnf_conf."
-}
+
 
 # Function to install packages
 install_packages() {
@@ -57,17 +50,6 @@ install_packages() {
     echo "Packages installed successfully."
 }
 
-# Function to setup dnf-automatic
-setup_dnf_auto() {
-    echo "Setting up dnf-automatic..."
-    modify_file /etc/dnf/automatic.conf "^apply_updates =.*" "apply_updates = yes"
-    modify_file /etc/dnf/automatic.conf "^reboot =.*" "reboot = when-needed"
-    modify_file /etc/dnf/automatic.conf "^reboot_command =.*" "reboot_command = \"shutdown -r +500 'Rebooting after applying package updates'\""
-
-    echo "Enabling and starting dnf-automatic.timer..."
-    sudo systemctl enable --now dnf-automatic.timer
-    echo "dnf-automatic.timer enabled and started successfully."
-}
 
 # Function to setup services
 setup_services() {
@@ -90,6 +72,41 @@ setup_firewall() {
     done
     sudo firewall-cmd --reload
     echo "Services added to the firewall public zone successfully."
+}
+
+# Function to modify /etc/systemd/logind.conf
+modify_logind_conf() {
+    echo "Modifying /etc/systemd/logind.conf..."
+    # Modify logind.conf file
+    sudo sed -i 's/^#HandleSuspendKey=suspend/HandleSuspendKey=ignore/' /etc/systemd/logind.conf
+    sudo sed -i 's/^#HandleLidSwitch=suspend/HandleLidSwitch=ignore/' /etc/systemd/logind.conf
+    sudo sed -i 's/^#HandleLidSwitchDocked=ignore/HandleLidSwitchDocked=ignore/' /etc/systemd/logind.conf
+    echo "logind.conf modified successfully."
+    # Restart the login service
+    echo "Restarting systemd-logind.service..."
+    sudo systemctl restart systemd-logind.service
+    echo "systemd-logind.service restarted successfully."
+}
+
+# Function to add lines to /etc/dnf/dnf.conf file
+edit_dnf_conf() {
+    local dnf_conf="/etc/dnf/dnf.conf"
+    echo "Editing $dnf_conf..."
+    # Add lines to /etc/dnf/dnf.conf file
+    add_to_file "$dnf_conf" "fastestmirror=True" "max_parallel_downloads=20" "deltarpm=True" "defaultyes=True"
+    echo "Configuration updated successfully in $dnf_conf."
+}
+
+# Function to setup dnf-automatic
+setup_dnf_auto() {
+    echo "Setting up dnf-automatic..."
+    modify_file /etc/dnf/automatic.conf "^apply_updates =.*" "apply_updates = yes"
+    modify_file /etc/dnf/automatic.conf "^reboot =.*" "reboot = when-needed"
+    modify_file /etc/dnf/automatic.conf "^reboot_command =.*" "reboot_command = \"shutdown -r +500 'Rebooting after applying package updates'\""
+
+    echo "Enabling and starting dnf-automatic.timer..."
+    sudo systemctl enable --now dnf-automatic.timer
+    echo "dnf-automatic.timer enabled and started successfully."
 }
 
 # Function to install Portainer
@@ -123,122 +140,6 @@ EOF
     echo "Portainer installed and configured successfully."
 }
 
-# Function to install Syncthing
-install_syncthing() {
-    echo "Installing Syncthing..."
-    # Increase the number of watches on the OS
-    echo "fs.inotify.max_user_watches=204800" | sudo tee -a /etc/sysctl.conf
-    sudo sysctl -p
-    install_packages "syncthing"
-    echo "Syncthing installed successfully."
-}
-
-# Function to create snapper config
-create_snapper_config() {
-    echo "Creating Snapper config..."
-    # Run snapper command to create config
-    sudo snapper create-config /
-    echo "Snapper config created successfully."
-}
-
-# Function to ensure TIMELINE_CREATE is set to "yes" in snapper config
-set_timeline_create() {
-    echo "Setting TIMELINE_CREATE to \"yes\" in snapper config..."
-    # Add or replace TIMELINE_CREATE option in /etc/snapper/configs/root
-    sudo sed -i 's/^TIMELINE_CREATE=.*/TIMELINE_CREATE="yes"/' /etc/snapper/configs/root
-    echo "TIMELINE_CREATE set to \"yes\" in snapper config."
-}
-
-# Function to modify /etc/systemd/logind.conf
-modify_logind_conf() {
-    echo "Modifying /etc/systemd/logind.conf..."
-    # Modify logind.conf file
-    sudo sed -i 's/^#HandleSuspendKey=suspend/HandleSuspendKey=ignore/' /etc/systemd/logind.conf
-    sudo sed -i 's/^#HandleLidSwitch=suspend/HandleLidSwitch=ignore/' /etc/systemd/logind.conf
-    sudo sed -i 's/^#HandleLidSwitchDocked=ignore/HandleLidSwitchDocked=ignore/' /etc/systemd/logind.conf
-    echo "logind.conf modified successfully."
-    # Restart the login service
-    echo "Restarting systemd-logind.service..."
-    sudo systemctl restart systemd-logind.service
-    echo "systemd-logind.service restarted successfully."
-}
-
-# Function to install Snapper and its plugin
-install_snapper() {
-    echo "Installing Snapper and its plugin..."
-    install_packages "snapper" "python3-dnf-plugin-snapper"
-    create_snapper_config
-    set_timeline_create
-    echo "Snapper installed and configured successfully."
-}
-
-# Function to install DNF Automatic
-install_dnf_auto() {
-    echo "Installing DNF Automatic..."
-    install_packages "dnf-automatic"
-    setup_dnf_auto
-    echo "DNF Automatic installed and configured successfully."
-}
-
-# Function to install DNF plugins
-install_dnf_plugins() {
-    echo "Installing DNF plugins..."
-    install_packages "dnf-plugin-tracer" "dnf-plugins-core" "NetworkManager-tui"
-    echo "DNF plugins installed successfully."
-}
-
-# Function to install Cockpit Navigator
-install_cockpit_navigator() {
-    echo "Installing Cockpit Navigator..."
-    install_packages "cockpit-navigator"
-    echo "Cockpit Navigator installed successfully."
-}
-
-# Function to install Cockpit Machines and libguestfs-tools
-install_cockpit_machines() {
-    echo "Installing Cockpit Machines and libguestfs-tools..."
-    install_packages "cockpit-machines" "libguestfs-tools"
-    echo "Cockpit Machines and libguestfs-tools installed successfully."
-}
-
-# Function to install Nano
-install_nano() {
-    echo "Installing Nano..."
-    install_packages "nano"
-    echo "Nano installed successfully."
-}
-
-# Function to execute post-install tasks for basic packages
-install_basic_packages() {
-    declare -a basic_packages_to_install=()
-
-    if [ "$INSTALL_SNAPPER" == "yes" ]; then
-        install_snapper
-    fi
-    
-    if [ "$INSTALL_DNF_AUTO" == "yes" ]; then
-        install_dnf_auto
-    fi
-    
-    if [ "$INSTALL_DNF_PLUGINS" == "yes" ]; then
-        install_dnf_plugins
-    fi
-    
-    if [ "$INSTALL_COCKPIT_NAVIGATOR" == "yes" ]; then
-        install_cockpit_navigator
-    fi
-    
-    if [ "$INSTALL_COCKPIT_MACHINES" == "yes" ]; then
-        install_cockpit_machines
-    fi
-    
-    if [ "$INSTALL_NANO" == "yes" ]; then
-        install_nano
-    fi
-
-    echo "Basic packages installed and configured successfully."
-}
-
 # Function to modify Syncthing configuration
 modify_syncthing_config() {
     local config_file="$HOME/.local/state/syncthing/config.xml"
@@ -260,6 +161,83 @@ modify_syncthing_config() {
     echo "Syncthing configuration modified successfully."
 }
 
+# Function to install Syncthing
+install_syncthing() {
+    echo "Installing Syncthing..."
+    # Increase the number of watches on the OS
+    echo "fs.inotify.max_user_watches=204800" | sudo tee -a /etc/sysctl.conf
+    sudo sysctl -p
+    install_packages "syncthing"
+    sudo systemctl enable --now syncthing@$(whoami).service
+    setup_firewall "syncthing" "syncthing-gui"
+    modify_syncthing_config
+    sudo systemctl restart syncthing@$(whoami).service
+    echo "Syncthing installed successfully."
+}
+
+# Function to create snapper config
+create_snapper_config() {
+    echo "Creating Snapper config..."
+    # Run snapper command to create config
+    sudo snapper create-config /
+    echo "Snapper config created successfully."
+}
+
+# Function to ensure TIMELINE_CREATE is set to "yes" in snapper config
+set_timeline_create() {
+    echo "Setting TIMELINE_CREATE to \"yes\" in snapper config..."
+    # Add or replace TIMELINE_CREATE option in /etc/snapper/configs/root
+    sudo sed -i 's/^TIMELINE_CREATE=.*/TIMELINE_CREATE="yes"/' /etc/snapper/configs/root
+    echo "TIMELINE_CREATE set to \"yes\" in snapper config."
+}
+
+
+# Function to install Snapper and its plugin
+install_snapper() {
+    echo "Installing Snapper and its plugin..."
+    install_packages "snapper" "python3-dnf-plugin-snapper"
+    create_snapper_config
+    set_timeline_create
+    echo "Snapper installed and configured successfully."
+}
+
+# Function to install DNF Automatic
+install_dnf_auto() {
+    echo "Installing DNF Automatic..."
+    install_packages "dnf-automatic"
+    setup_dnf_auto
+    echo "DNF Automatic installed and configured successfully."
+}
+
+
+
+
+# Function to execute post-install tasks for basic packages
+install_basic_packages() {
+    declare -a basic_packages_to_install=()
+    
+    if [ "$INSTALL_DNF_PLUGINS" == "yes" ]; then
+        basic_packages_to_install+=( "dnf-plugin-tracer" "dnf-plugins-core" "NetworkManager-tui" )
+    fi
+    
+    if [ "$INSTALL_COCKPIT_NAVIGATOR" == "yes" ]; then
+        basic_packages_to_install+=( "cockpit-navigator" )
+    fi
+    
+    if [ "$INSTALL_COCKPIT_MACHINES" == "yes" ]; then
+        basic_packages_to_install+=( "cockpit-machines" "libguestfs-tools" )
+    fi
+    
+    if [ "$INSTALL_NANO" == "yes" ]; then
+        basic_packages_to_install+=( "nano" )
+    fi
+
+    install_packages "${basic_packages_to_install[@]}"
+
+    echo "Basic packages installed and configured successfully."
+}
+
+
 
 # Main function to execute post-install tasks
 main() {
@@ -267,6 +245,17 @@ main() {
     modify_logind_conf
     # Edit dnf_conf
     edit_dnf_conf
+    
+    # Install additional software suites
+    if [ "$INSTALL_SNAPPER" == "yes" ]; then
+        install_snapper
+    fi
+
+    # Install additional software suites
+    if [ "$INSTALL_DNF_AUTO" == "yes" ]; then
+        install_dnf_auto
+    fi
+    
     # Install basic packages
     install_basic_packages
     # Upgrade system
@@ -274,7 +263,7 @@ main() {
 
     # Install additional software suites
     if [ "$INSTALL_SYNCTHING" == "yes" ]; then
-        install_syncthing && sudo systemctl enable --now syncthing@$(whoami).service && setup_firewall "syncthing" "syncthing-gui" && modify_syncthing_config && sudo systemctl restart syncthing@$(whoami).service
+        install_syncthing
     fi
     
     if [ "$INSTALL_PORTAINER_DOCKER" == "yes" ]; then
