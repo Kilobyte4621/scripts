@@ -163,41 +163,82 @@ modify_logind_conf() {
     echo "systemd-logind.service restarted successfully."
 }
 
+# Function to install Snapper and its plugin
+install_snapper() {
+    echo "Installing Snapper and its plugin..."
+    install_packages "snapper" "python3-dnf-plugin-snapper"
+    create_snapper_config
+    set_timeline_create
+    echo "Snapper installed and configured successfully."
+}
+
+# Function to install DNF Automatic
+install_dnf_auto() {
+    echo "Installing DNF Automatic..."
+    install_packages "dnf-automatic"
+    setup_dnf_auto
+    echo "DNF Automatic installed and configured successfully."
+}
+
+# Function to install DNF plugins
+install_dnf_plugins() {
+    echo "Installing DNF plugins..."
+    install_packages "dnf-plugin-tracer" "dnf-plugins-core" "NetworkManager-tui"
+    echo "DNF plugins installed successfully."
+}
+
+# Function to install Cockpit Navigator
+install_cockpit_navigator() {
+    echo "Installing Cockpit Navigator..."
+    install_packages "cockpit-navigator"
+    echo "Cockpit Navigator installed successfully."
+}
+
+# Function to install Cockpit Machines and libguestfs-tools
+install_cockpit_machines() {
+    echo "Installing Cockpit Machines and libguestfs-tools..."
+    install_packages "cockpit-machines" "libguestfs-tools"
+    echo "Cockpit Machines and libguestfs-tools installed successfully."
+}
+
+# Function to install Nano
+install_nano() {
+    echo "Installing Nano..."
+    install_packages "nano"
+    echo "Nano installed successfully."
+}
+
 # Function to execute post-install tasks for basic packages
 install_basic_packages() {
     declare -a basic_packages_to_install=()
 
     if [ "$INSTALL_SNAPPER" == "yes" ]; then
-        basic_packages_to_install+=( "snapper" "python3-dnf-plugin-snapper" )
-        create_snapper_config
-        set_timeline_create
+        install_snapper
     fi
     
     if [ "$INSTALL_DNF_AUTO" == "yes" ]; then
-        basic_packages_to_install+=( "dnf-automatic" )
-        setup_dnf_auto
+        install_dnf_auto
     fi
     
     if [ "$INSTALL_DNF_PLUGINS" == "yes" ]; then
-        basic_packages_to_install+=( "dnf-plugin-tracer" "dnf-plugins-core" "NetworkManager-tui" )
+        install_dnf_plugins
     fi
     
     if [ "$INSTALL_COCKPIT_NAVIGATOR" == "yes" ]; then
-        basic_packages_to_install+=( "cockpit-navigator" )
+        install_cockpit_navigator
     fi
     
     if [ "$INSTALL_COCKPIT_MACHINES" == "yes" ]; then
-        basic_packages_to_install+=( "cockpit-machines" "libguestfs-tools" )
+        install_cockpit_machines
     fi
     
     if [ "$INSTALL_NANO" == "yes" ]; then
-        basic_packages_to_install+=( "nano" )
+        install_nano
     fi
-
-    install_packages "${basic_packages_to_install[@]}"
 
     echo "Basic packages installed and configured successfully."
 }
+
 
 # Main function to execute post-install tasks
 main() {
