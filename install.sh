@@ -76,7 +76,7 @@ setup_firewall() {
 }
 
 # Function to add ",pwfeedback" to the env_reset line in sudoers file
-add_pwfeedback_to_sudoers() {
+add_pwfeedback_to_sudo() {
     local sudoers_file="/etc/sudoers"
     
     echo "Adding ',pwfeedback' to the env_reset line in sudoers file..."
