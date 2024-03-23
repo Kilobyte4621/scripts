@@ -85,10 +85,6 @@ setup_firewall() {
 
 # Function to install Portainer
 install_portainer() {
-    echo "Adding Docker repository..."
-    sudo dnf -y install dnf-plugins-core
-    sudo dnf config-manager --add-repo https://download.docker.com/linux/fedora/docker-ce.repo
-
     echo "Installing Portainer..."
     sudo tee /etc/firewalld/services/portainer.xml > /dev/null <<EOF
 <?xml version="1.0" encoding="utf-8"?>
@@ -167,6 +163,9 @@ main() {
     fi
     
     if [ "$INSTALL_PORTAINER_DOCKER" == "yes" ]; then
+        echo "Adding Docker repository..."
+        sudo dnf -y install dnf-plugins-core
+        sudo dnf config-manager --add-repo https://download.docker.com/linux/fedora/docker-ce.repo
         install_packages "docker-ce" "docker-ce-cli" "containerd.io" "docker-buildx-plugin" "docker-compose" "docker-compose-plugin" && sudo loginctl enable-linger "$(whoami)" && setup_services "docker" "containerd" && install_portainer
     fi
 
