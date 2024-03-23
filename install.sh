@@ -168,7 +168,7 @@ main() {
     # Install basic packages
     install_basic_packages
     # Upgrade system
-    sudo dnf upgrade --refresh -y
+    sudo dnf upgrade -y
 
     # Install additional software suites
     if [ "$INSTALL_SYNCTHING" == "yes" ]; then
