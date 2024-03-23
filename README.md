@@ -2,7 +2,9 @@
  scripts for linux desktops and servers
 
 # install.sh
-`curl -sSL https://raw.githubusercontent.com/Kilobyte4621/scripts/main/install.sh | bash`
+```
+curl -sSL https://raw.githubusercontent.com/Kilobyte4621/scripts/main/install.sh | bash
+```
 
 This is a post-installation script that optimizes Fedora Server installations. What does it do?
 
