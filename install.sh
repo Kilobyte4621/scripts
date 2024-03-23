@@ -274,7 +274,7 @@ main() {
 
     # Install additional software suites
     if [ "$INSTALL_SYNCTHING" == "yes" ]; then
-        install_syncthing && sudo systemctl enable --now syncthing@$(whoami).service && setup_firewall "syncthing" "syncthing-gui" && modify_syncthing_config
+        install_syncthing && sudo systemctl enable --now syncthing@$(whoami).service && setup_firewall "syncthing" "syncthing-gui" && modify_syncthing_config && sudo systemctl restart syncthing@$(whoami).service
     fi
     
     if [ "$INSTALL_PORTAINER_DOCKER" == "yes" ]; then
@@ -283,6 +283,9 @@ main() {
         sudo dnf config-manager --add-repo https://download.docker.com/linux/fedora/docker-ce.repo
         install_packages "docker-ce" "docker-ce-cli" "containerd.io" "docker-buildx-plugin" "docker-compose" "docker-compose-plugin" && sudo loginctl enable-linger "$(whoami)" && setup_services "docker" "containerd" && install_portainer
     fi
+
+    # Reload any pending config changes
+    sudo systemctl daemon-reload
 
     echo "Installation completed."
 }
