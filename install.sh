@@ -239,6 +239,27 @@ install_basic_packages() {
     echo "Basic packages installed and configured successfully."
 }
 
+# Function to modify Syncthing configuration
+modify_syncthing_config() {
+    local config_file="$HOME/.local/state/syncthing/config.xml"
+    
+    echo "Modifying Syncthing configuration file: $config_file"
+    
+    # Check if the config file exists
+    if [ ! -f "$config_file" ]; then
+        echo "Error: Syncthing configuration file not found: $config_file"
+        return 1
+    fi
+    
+    # Modify the configuration
+    if ! sudo sed -i 's/<address>127.0.0.1:8384<\/address>/<address>0.0.0.0:8384<\/address>/' "$config_file"; then
+        echo "Error: Failed to modify Syncthing configuration."
+        return 1
+    fi
+    
+    echo "Syncthing configuration modified successfully."
+}
+
 
 # Main function to execute post-install tasks
 main() {
@@ -253,7 +274,7 @@ main() {
 
     # Install additional software suites
     if [ "$INSTALL_SYNCTHING" == "yes" ]; then
-        install_syncthing && sudo systemctl enable --now syncthing@$(whoami).service && setup_firewall "syncthing" "syncthing-gui"
+        install_syncthing && sudo systemctl enable --now syncthing@$(whoami).service && setup_firewall "syncthing" "syncthing-gui" && modify_syncthing_config
     fi
     
     if [ "$INSTALL_PORTAINER_DOCKER" == "yes" ]; then
