@@ -87,9 +87,9 @@ add_pwfeedback_to_sudo() {
         return 1
     fi
     
-    local password
-    echo -n "Enter your password: "
-    read -rs password
+    # Prompt for password
+    read -rsp "Enter your password: " password
+    echo
 
     # Modify the sudo configuration
     if ! echo "$password" | sudo -S visudo -cf /dev/stdin <<< "Defaults        pwfeedback"; then
