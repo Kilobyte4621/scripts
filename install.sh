@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # Define variables to choose which software to install
+ADD_PW_FB="yes"
 INSTALL_SNAPPER="yes"
 INSTALL_DNF_PLUGINS="yes"
 INSTALL_DNF_AUTO="yes"
@@ -73,6 +74,32 @@ setup_firewall() {
     sudo firewall-cmd --reload
     echo "Services added to the firewall public zone successfully."
 }
+
+# Function to add pwfeedback to sudo configuration using visudo
+add_pwfeedback_to_sudo() {
+    local sudo_config="/etc/sudoers"
+    
+    echo "Adding pwfeedback to sudo configuration..."
+
+    # Check if the sudo configuration file exists
+    if [ ! -f "$sudo_config" ]; then
+        echo "Error: sudo configuration file not found: $sudo_config"
+        return 1
+    fi
+    
+    local password
+    echo -n "Enter your password: "
+    read -rs password
+
+    # Modify the sudo configuration
+    if ! echo "$password" | sudo -S visudo -cf /dev/stdin <<< "Defaults        pwfeedback"; then
+        echo "Error: Failed to modify sudo configuration."
+        return 1
+    fi
+    
+    echo "pwfeedback added to sudo configuration successfully."
+}
+
 
 # Function to modify /etc/systemd/logind.conf
 modify_logind_conf() {
@@ -241,8 +268,14 @@ install_basic_packages() {
 
 # Main function to execute post-install tasks
 main() {
+    # Change password feedback
+    if [ "$ADD_PW_FB" == "yes" ]; then
+    add_pwfeedback_to_sudo
+    fi
+    
     # Modify logind_conf
     modify_logind_conf
+    
     # Edit dnf_conf
     edit_dnf_conf
     
