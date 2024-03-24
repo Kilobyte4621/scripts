@@ -1,14 +1,16 @@
 #!/bin/bash
+
 # Define variables to choose which software to install
 INSTALL_SNAPPER="yes"
 INSTALL_DNF_PLUGINS="yes"
 INSTALL_DNF_AUTO="yes"
 INSTALL_NETWORK_MANAGER_TUI="yes"
 INSTALL_COCKPIT_NAVIGATOR="yes"
-INSTALL_COCKPIT_MACHINES="no"
 INSTALL_NANO="yes"
 INSTALL_PORTAINER_DOCKER="yes"
 INSTALL_SYNCTHING="yes"
+ENABLE_VIRTUALIZATION="yes"
+INSTALL_COCKPIT_MACHINES="yes"
 
 # Function to modify a file
 modify_file() {
@@ -210,7 +212,63 @@ install_dnf_auto() {
 }
 
 
+# Function to install virtualization packages
+install_virtualization_packages() {
+    echo "Installing virtualization packages..."
+    sudo dnf group install --with-optional virtualization -y
+    echo "Virtualization packages installed successfully."
+}
 
+# Function to start libvirtd service
+start_libvirtd_service() {
+    echo "Starting libvirtd service..."
+    sudo systemctl start libvirtd
+    echo "libvirtd service started successfully."
+}
+
+# Function to enable libvirtd service on boot
+enable_libvirtd_service_on_boot() {
+    echo "Enabling libvirtd service on boot..."
+    sudo systemctl enable libvirtd
+    echo "libvirtd service enabled on boot successfully."
+}
+
+# Function to verify KVM kernel modules
+verify_kvm_kernel_modules() {
+    echo "Verifying KVM kernel modules..."
+    lsmod | grep kvm
+}
+
+# Function to edit libvirtd configuration
+edit_libvirtd_configuration() {
+    echo "Editing libvirtd configuration..."
+    sudo tee /etc/libvirt/libvirtd.conf > /dev/null <<EOF
+unix_sock_group = "libvirt"
+unix_sock_rw_perms = "0770"
+EOF
+    echo "Libvirtd configuration updated successfully."
+}
+
+# Function to add user to libvirt group
+add_user_to_libvirt_group() {
+    echo "Adding user to libvirt group..."
+    sudo usermod -a -G libvirt "$(whoami)"
+    sudo systemctl daemon-reload
+    echo "User added to libvirt group successfully."
+}
+
+# Virtualization function to execute all steps related to libvirt
+virt() {
+    install_virtualization_packages
+    start_libvirtd_service
+    enable_libvirtd_service_on_boot
+    verify_kvm_kernel_modules
+    edit_libvirtd_configuration
+    add_user_to_libvirt_group
+    if [ "$INSTALL_COCKPIT_MACHINES" == "yes" ]; then
+        install_packages "cockpit-machines" "libguestfs-tools" 
+    fi
+}
 
 # Function to execute post-install tasks for basic packages
 install_basic_packages() {
@@ -222,10 +280,6 @@ install_basic_packages() {
     
     if [ "$INSTALL_COCKPIT_NAVIGATOR" == "yes" ]; then
         basic_packages_to_install+=( "cockpit-navigator" )
-    fi
-    
-    if [ "$INSTALL_COCKPIT_MACHINES" == "yes" ]; then
-        basic_packages_to_install+=( "cockpit-machines" "libguestfs-tools" )
     fi
     
     if [ "$INSTALL_NANO" == "yes" ]; then
@@ -275,11 +329,17 @@ main() {
         install_packages "docker-ce" "docker-ce-cli" "containerd.io" "docker-buildx-plugin" "docker-compose" "docker-compose-plugin" && sudo loginctl enable-linger "$(whoami)" && setup_services "docker" "containerd" && install_portainer
     fi
 
+    if [ "$ENABLE_VIRTUALIZATION" == "yes" ]; then
+        virt
+    fi
+
     # Reload any pending config changes
     sudo systemctl daemon-reload
 
     echo "Installation completed."
 }
+
+
 
 # Call the main function
 main
