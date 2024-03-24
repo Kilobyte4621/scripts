@@ -2,7 +2,7 @@
 
 # Function to interactively redefine environment variables
 redefine_environment_variables() {
-    echo "Do you want to redefine environment variables interactively? (yes/no)"
+    echo "Do you want to redefine environment variables interactively? (no/yes)"
     read -r choice
     if [ "$choice" = "yes" ]; then
         echo "Enter new values for the environment variables (leave blank to keep default):"
