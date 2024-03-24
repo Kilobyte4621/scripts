@@ -7,7 +7,7 @@ cp /etc/ssh/sshd_config /etc/ssh/sshd_config_backup
 read -p "Enter the list of users to allow SSH access (separated by spaces): " users
 
 # Set SSH server configuration options
-cat <<EOF > /etc/ssh/sshd_config
+cat <<EOF >> /etc/ssh/sshd_config
 # Hardened SSH Configuration
 
 # Disable root login
@@ -68,10 +68,12 @@ X11Forwarding no
 # Set MaxStartups to prevent DoS attacks
 MaxStartups 10:30:100
 
-# Allow only specified users to login
+# Allow only specific users to login
 AllowUsers $users
 
 EOF
+
+echo "Hardened SSH configuration lines appended to sshd_config file."
 
 # Restart SSH service
 service sshd restart
