@@ -16,7 +16,7 @@ This is a post-installation script that optimizes Fedora Server installations. W
 
 ### Stable branch:
 ```
-curl -sSL https://raw.githubusercontent.com/Kilobyte4621/scripts/stable/install.sh | bash
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/Kilobyte4621/scripts/stable/install.sh)"
 ```
 ### Testing branch:
 ```
