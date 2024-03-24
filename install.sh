@@ -8,6 +8,7 @@ redefine_environment_variables() {
         echo "Enter new values for the environment variables (leave blank to keep default):"
         read -rp "MOD_LID (default: yes): " MOD_LID
         read -rp "MOD_DNF (default: yes): " MOD_DNF
+        read -rp "REPLACE_MCELOG_RAS (default: yes): " REPLACE_MCELOG_RAS
         read -rp "INSTALL_SNAPPER (default: yes): " INSTALL_SNAPPER
         read -rp "INSTALL_DNF_PLUGINS (default: yes): " INSTALL_DNF_PLUGINS
         read -rp "INSTALL_DNF_AUTO (default: yes): " INSTALL_DNF_AUTO
@@ -28,6 +29,7 @@ redefine_environment_variables
 # Default values for environment variables
 MOD_LID="${MOD_LID:-yes}"
 MOD_DNF="${MOD_DNF:-yes}"
+REPLACE_MCELOG_RAS="${REPLACE_MCELOG_RAS:-yes}"
 INSTALL_SNAPPER="${INSTALL_SNAPPER:-yes}"
 INSTALL_DNF_PLUGINS="${INSTALL_DNF_PLUGINS:-yes}"
 INSTALL_DNF_AUTO="${INSTALL_DNF_AUTO:-yes}"
@@ -126,6 +128,7 @@ edit_dnf_conf() {
     echo "Configuration updated successfully in $dnf_conf."
 }
 
+
 # Function to setup dnf-automatic
 setup_dnf_auto() {
     echo "Setting up dnf-automatic..."
@@ -136,6 +139,22 @@ setup_dnf_auto() {
     echo "Enabling and starting dnf-automatic.timer..."
     sudo systemctl enable --now dnf-automatic.timer
     echo "dnf-automatic.timer enabled and started successfully."
+}
+
+# Function to replace mcelog by rasdaemon
+replace_mcelog() {
+    echo "Replacing MCE log by RAS daemon..."
+    # Disable mcelog service
+    sudo systemctl disable --now mcelog.service
+
+    # Install rasdaemon
+    sudo dnf install rasdaemon -y
+
+    # Enable rasdaemon service
+    sudo systemctl enable --now rasdaemon.service
+
+    echo "MCE log replaced by RAS daemon successfully"
+
 }
 
 # Function to install Portainer
@@ -339,21 +358,29 @@ main() {
     if [ "$MOD_DNF" == "yes" ]; then
         edit_dnf_conf
     fi
-        
+
     # Install additional software suites
     if [ "$INSTALL_SNAPPER" == "yes" ]; then
         install_snapper
     fi
+
+    # Install basic packages if any are selected
+    if [ "${#basic_packages_to_install[@]}" -gt 0 ]; then
+        install_basic_packages
+    fi
+    
+    # Upgrade system
+    sudo dnf upgrade -y
 
     # Install additional software suites
     if [ "$INSTALL_DNF_AUTO" == "yes" ]; then
         install_dnf_auto
     fi
     
-    # Install basic packages
-    install_basic_packages
-    # Upgrade system
-    sudo dnf upgrade -y
+    # Replace MCE Log by RAS Daemon
+    if [ "$REPLACE_MCELOG_RAS" == "yes" ]; then
+        replace_mcelog
+    fi
 
     # Install additional software suites
     if [ "$INSTALL_SYNCTHING" == "yes" ]; then
