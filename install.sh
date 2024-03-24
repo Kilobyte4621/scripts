@@ -8,6 +8,7 @@ redefine_environment_variables() {
         echo "Enter new values for the environment variables (leave blank to keep default):"
         read -rp "MOD_LID (default: yes): " MOD_LID
         read -rp "MOD_DNF (default: yes): " MOD_DNF
+        read -rp "REPLACE_MCELOG_RAS (default: yes): " REPLACE_MCELOG_RAS
         read -rp "INSTALL_SNAPPER (default: yes): " INSTALL_SNAPPER
         read -rp "INSTALL_DNF_PLUGINS (default: yes): " INSTALL_DNF_PLUGINS
         read -rp "INSTALL_DNF_AUTO (default: yes): " INSTALL_DNF_AUTO
@@ -28,6 +29,7 @@ redefine_environment_variables
 # Default values for environment variables
 MOD_LID="${MOD_LID:-yes}"
 MOD_DNF="${MOD_DNF:-yes}"
+REPLACE_MCELOG_RAS="${REPLACE_MCELOG_RAS:-yes}"
 INSTALL_SNAPPER="${INSTALL_SNAPPER:-yes}"
 INSTALL_DNF_PLUGINS="${INSTALL_DNF_PLUGINS:-yes}"
 INSTALL_DNF_AUTO="${INSTALL_DNF_AUTO:-yes}"
@@ -124,6 +126,18 @@ edit_dnf_conf() {
     # Add lines to /etc/dnf/dnf.conf file
     add_to_file "$dnf_conf" "fastestmirror=True" "max_parallel_downloads=20" "deltarpm=True" "defaultyes=True"
     echo "Configuration updated successfully in $dnf_conf."
+}
+
+
+# Function to replace mcelog by rasdaemon
+replace_mcelog() {
+    echo "Replacing MCE log by RAS daemon..."
+    # Disable MCE Log service
+    sudo systemctl disable mcelog.service
+    # Install RAS Daemon
+    sudo dnf install rasdaemon -y
+    sudo systemctl enable rasdaemon.service
+
 }
 
 # Function to setup dnf-automatic
@@ -339,6 +353,12 @@ main() {
     if [ "$MOD_DNF" == "yes" ]; then
         edit_dnf_conf
     fi
+
+    # Edit dnf_conf
+    if [ "REPLACE_MCELOG_RAS" == "yes" ]; then
+        replace_mcelog
+    fi
+    
         
     # Install additional software suites
     if [ "$INSTALL_SNAPPER" == "yes" ]; then
