@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# Run as root
 sudo su
 
 # Backup sshd_config
@@ -77,9 +78,10 @@ EOF
 
 echo "Hardened SSH configuration lines appended to sshd_config file."
 
+# Exit root user
 exit
 
 # Restart SSH service
-service sshd restart
+sudo systemctl restart sshd
 
 echo "SSH configuration hardened successfully!"
