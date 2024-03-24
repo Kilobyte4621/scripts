@@ -75,8 +75,9 @@ setup_firewall() {
     echo "Services added to the firewall public zone successfully."
 }
 
+
 # Function to add ",pwfeedback" to the env_reset line in sudoers file
-add_pwfeedback_to_sudo() {
+add_pwfeedback_to_sudoers() {
     local sudoers_file="/etc/sudoers"
     
     echo "Adding ',pwfeedback' to the env_reset line in sudoers file..."
@@ -282,7 +283,7 @@ install_basic_packages() {
 main() {
     # Change password feedback
     if [ "$ADD_PW_FB" == "yes" ]; then
-    add_pwfeedback_to_sudo
+        add_pwfeedback_to_sudoers
     fi
     
     # Modify logind_conf
