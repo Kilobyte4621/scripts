@@ -9,7 +9,7 @@ INSTALL_COCKPIT_NAVIGATOR="yes"
 INSTALL_NANO="yes"
 INSTALL_PORTAINER_DOCKER="yes"
 INSTALL_SYNCTHING="yes"
-ENABLE_VIRTUALIZATION="no"
+ENABLE_VIRTUALIZATION="yes"
 INSTALL_COCKPIT_MACHINES="yes"
 
 # Function to modify a file
@@ -242,12 +242,18 @@ verify_kvm_kernel_modules() {
 # Function to edit libvirtd configuration
 edit_libvirtd_configuration() {
     echo "Editing libvirtd configuration..."
-    sudo tee /etc/libvirt/libvirtd.conf > /dev/null <<EOF
+    sudo sed -i '/^#unix_sock_group = "libvirt"/{s/^#//;}' /etc/libvirt/libvirtd.conf
+    sudo sed -i '/^#unix_sock_ro_perms = "0777"/{s/^#//;}' /etc/libvirt/libvirtd.conf
+    sudo sed -i '/^#unix_sock_group = "libvirt"/{s/^#//;}' /etc/libvirt/libvirtd.conf
+    sudo sed -i '/^unix_sock_ro_perms/s/^/#/' /etc/libvirt/libvirtd.conf
+    sudo sed -i '/^unix_sock_group/s/^/#/' /etc/libvirt/libvirtd.conf
+    sudo tee -a /etc/libvirt/libvirtd.conf > /dev/null <<EOF
 unix_sock_group = "libvirt"
 unix_sock_rw_perms = "0770"
 EOF
     echo "Libvirtd configuration updated successfully."
 }
+
 
 # Function to add user to libvirt group
 add_user_to_libvirt_group() {
