@@ -364,10 +364,10 @@ main() {
         install_snapper
     fi
 
-    # Install basic packages if any are selected
-    if [ "${#basic_packages_to_install[@]}" -gt 0 ]; then
+    ## Install basic packages if any are selected
+    #if [ "${#basic_packages_to_install[@]}" -gt 0 ]; then
         install_basic_packages
-    fi
+    #fi
     
     # Upgrade system
     sudo dnf upgrade -y
