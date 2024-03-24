@@ -1,13 +1,13 @@
 #!/bin/bash
 
 # Backup sshd_config
-sudo cp /etc/ssh/sshd_config /etc/ssh/sshd_config_backup
+cp /etc/ssh/sshd_config /etc/ssh/sshd_config_backup
 
 # Prompt for users
 read -p "Enter the list of users to allow SSH access (separated by spaces): " users
 
 # Set SSH server configuration options
-sudo tee -a /etc/ssh/sshd_config >/dev/null <<EOF
+tee -a /etc/ssh/sshd_config <<EOF
 # Hardened SSH Configuration
 
 # Disable root login
