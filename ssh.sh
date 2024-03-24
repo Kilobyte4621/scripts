@@ -76,6 +76,9 @@ EOF
 echo "Hardened SSH configuration lines appended to sshd_config file."
 
 # Restart SSH service
-sudo systemctl restart sshd
+systemctl restart sshd
+
+# Exit root user
+exit
 
 echo "SSH configuration hardened successfully!"
