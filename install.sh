@@ -364,16 +364,17 @@ main() {
         install_snapper
     fi
 
+    # Install basic packages
+    install_basic_packages
+    
+    # Upgrade system
+    sudo dnf upgrade -y
+
     # Install additional software suites
     if [ "$INSTALL_DNF_AUTO" == "yes" ]; then
         install_dnf_auto
     fi
     
-    # Install basic packages
-    install_basic_packages
-    # Upgrade system
-    sudo dnf upgrade -y
-
     # Replace MCE Log by RAS Daemon
     if [ "$REPLACE_MCELOG_RAS" == "yes" ]; then
         replace_mcelog
