@@ -1,18 +1,43 @@
 #!/bin/bash
 
-# Define variables to choose which software to install
-MOD_LID="yes"
-MOD_DNF="yes"
-INSTALL_SNAPPER="yes"
-INSTALL_DNF_PLUGINS="yes"
-INSTALL_DNF_AUTO="yes"
-INSTALL_NETWORK_MANAGER_TUI="yes"
-INSTALL_COCKPIT_NAVIGATOR="yes"
-INSTALL_NANO="yes"
-INSTALL_PORTAINER_DOCKER="yes"
-INSTALL_SYNCTHING="yes"
-ENABLE_VIRTUALIZATION="no"
-INSTALL_COCKPIT_MACHINES="yes"
+# Function to interactively redefine environment variables
+redefine_environment_variables() {
+    echo "Do you want to redefine environment variables interactively? (yes/no)"
+    read -r choice
+    if [ "$choice" = "yes" ]; then
+        echo "Enter new values for the environment variables (leave blank to keep default):"
+        read -rp "MOD_LID (default: yes): " MOD_LID
+        read -rp "MOD_DNF (default: yes): " MOD_DNF
+        read -rp "INSTALL_SNAPPER (default: yes): " INSTALL_SNAPPER
+        read -rp "INSTALL_DNF_PLUGINS (default: yes): " INSTALL_DNF_PLUGINS
+        read -rp "INSTALL_DNF_AUTO (default: yes): " INSTALL_DNF_AUTO
+        read -rp "INSTALL_NETWORK_MANAGER_TUI (default: yes): " INSTALL_NETWORK_MANAGER_TUI
+        read -rp "INSTALL_COCKPIT_NAVIGATOR (default: yes): " INSTALL_COCKPIT_NAVIGATOR
+        read -rp "INSTALL_NANO (default: yes): " INSTALL_NANO
+        read -rp "INSTALL_PORTAINER_DOCKER (default: yes): " INSTALL_PORTAINER_DOCKER
+        read -rp "INSTALL_SYNCTHING (default: yes): " INSTALL_SYNCTHING
+        read -rp "ENABLE_VIRTUALIZATION (default: no): " ENABLE_VIRTUALIZATION
+        read -rp "INSTALL_COCKPIT_MACHINES (default: yes): " INSTALL_COCKPIT_MACHINES
+    fi
+}
+
+# Call the function to redefine environment variables interactively
+redefine_environment_variables
+
+
+# Default values for environment variables
+MOD_LID="${MOD_LID:-yes}"
+MOD_DNF="${MOD_DNF:-yes}"
+INSTALL_SNAPPER="${INSTALL_SNAPPER:-yes}"
+INSTALL_DNF_PLUGINS="${INSTALL_DNF_PLUGINS:-yes}"
+INSTALL_DNF_AUTO="${INSTALL_DNF_AUTO:-yes}"
+INSTALL_NETWORK_MANAGER_TUI="${INSTALL_NETWORK_MANAGER_TUI:-yes}"
+INSTALL_COCKPIT_NAVIGATOR="${INSTALL_COCKPIT_NAVIGATOR:-yes}"
+INSTALL_NANO="${INSTALL_NANO:-yes}"
+INSTALL_PORTAINER_DOCKER="${INSTALL_PORTAINER_DOCKER:-yes}"
+INSTALL_SYNCTHING="${INSTALL_SYNCTHING:-yes}"
+ENABLE_VIRTUALIZATION="${ENABLE_VIRTUALIZATION:-no}"
+INSTALL_COCKPIT_MACHINES="${INSTALL_COCKPIT_MACHINES:-yes}"
 
 # Function to modify a file
 modify_file() {

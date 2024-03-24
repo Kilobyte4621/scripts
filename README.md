@@ -1,7 +1,7 @@
 # scripts
  scripts for linux desktops and servers
 
-# install.sh
+## install.sh
 
 This is a post-installation script that optimizes Fedora Server installations. What does it do?
 
@@ -14,11 +14,18 @@ This is a post-installation script that optimizes Fedora Server installations. W
 - Installs Syncthing and configure firewall
 - Installs Docker root and Portainer and configure firewall
 
-## Stable branch:
+### Stable branch:
 ```
-curl -sSL https://raw.githubusercontent.com/Kilobyte4621/scripts/stable/install.sh | bash
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/Kilobyte4621/scripts/stable/install.sh)"
 ```
-## Testing branch:
+### Testing branch:
 ```
-curl -sSL https://raw.githubusercontent.com/Kilobyte4621/scripts/testing/install.sh | bash
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/Kilobyte4621/scripts/testing/install.sh)"
+```
+
+## ssh.sh
+
+### Testing branch:
+```
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/Kilobyte4621/scripts/testing/ssh.sh)"
 ```
