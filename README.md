@@ -24,10 +24,7 @@ bash -c "$(curl -fsSL https://raw.githubusercontent.com/Kilobyte4621/scripts/tes
 ```
 
 ## ssh.sh
-### Stable branch:
-```
-bash -c "$(curl -fsSL https://raw.githubusercontent.com/Kilobyte4621/scripts/stable/ssh.sh)"
-```
+
 ### Testing branch:
 ```
 bash -c "$(curl -fsSL https://raw.githubusercontent.com/Kilobyte4621/scripts/testing/ssh.sh)"
