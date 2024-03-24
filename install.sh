@@ -360,7 +360,7 @@ main() {
     fi
 
     # Edit dnf_conf
-    if [ "REPLACE_MCELOG_RAS" == "yes" ]; then
+    if [ "$REPLACE_MCELOG_RAS" == "yes" ]; then
         replace_mcelog
     fi
     
