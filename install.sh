@@ -129,6 +129,18 @@ edit_dnf_conf() {
 }
 
 
+# Function to setup dnf-automatic
+setup_dnf_auto() {
+    echo "Setting up dnf-automatic..."
+    modify_file /etc/dnf/automatic.conf "^apply_updates =.*" "apply_updates = yes"
+    modify_file /etc/dnf/automatic.conf "^reboot =.*" "reboot = when-needed"
+    modify_file /etc/dnf/automatic.conf "^reboot_command =.*" "reboot_command = \"shutdown -r +500 'Rebooting after applying package updates'\""
+
+    echo "Enabling and starting dnf-automatic.timer..."
+    sudo systemctl enable --now dnf-automatic.timer
+    echo "dnf-automatic.timer enabled and started successfully."
+}
+
 # Function to replace mcelog by rasdaemon
 replace_mcelog() {
     echo "Replacing MCE log by RAS daemon..."
@@ -143,18 +155,6 @@ replace_mcelog() {
 
     echo "MCE log replaced by RAS daemon successfully"
 
-}
-
-# Function to setup dnf-automatic
-setup_dnf_auto() {
-    echo "Setting up dnf-automatic..."
-    modify_file /etc/dnf/automatic.conf "^apply_updates =.*" "apply_updates = yes"
-    modify_file /etc/dnf/automatic.conf "^reboot =.*" "reboot = when-needed"
-    modify_file /etc/dnf/automatic.conf "^reboot_command =.*" "reboot_command = \"shutdown -r +500 'Rebooting after applying package updates'\""
-
-    echo "Enabling and starting dnf-automatic.timer..."
-    sudo systemctl enable --now dnf-automatic.timer
-    echo "dnf-automatic.timer enabled and started successfully."
 }
 
 # Function to install Portainer
@@ -359,12 +359,6 @@ main() {
         edit_dnf_conf
     fi
 
-    # Edit dnf_conf
-    if [ "$REPLACE_MCELOG_RAS" == "yes" ]; then
-        replace_mcelog
-    fi
-    
-        
     # Install additional software suites
     if [ "$INSTALL_SNAPPER" == "yes" ]; then
         install_snapper
@@ -379,6 +373,11 @@ main() {
     install_basic_packages
     # Upgrade system
     sudo dnf upgrade -y
+
+    # Replace MCE Log by RAS Daemon
+    if [ "$REPLACE_MCELOG_RAS" == "yes" ]; then
+        replace_mcelog
+    fi
 
     # Install additional software suites
     if [ "$INSTALL_SYNCTHING" == "yes" ]; then
