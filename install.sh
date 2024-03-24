@@ -133,10 +133,11 @@ edit_dnf_conf() {
 replace_mcelog() {
     echo "Replacing MCE log by RAS daemon..."
     # Disable MCE Log service
-    sudo systemctl disable mcelog.service
+    sudo systemctl disable --now mcelog.service
     # Install RAS Daemon
     sudo dnf install -y rasdaemon
     sudo systemctl enable --now rasdaemon.service
+    echo "MCE log replaced by RAS daemon successfully"
 
 }
 
