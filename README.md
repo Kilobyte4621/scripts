@@ -20,7 +20,7 @@ curl -sSL https://raw.githubusercontent.com/Kilobyte4621/scripts/stable/install.
 ```
 ### Testing branch:
 ```
-curl -sSL https://raw.githubusercontent.com/Kilobyte4621/scripts/testing/install.sh | bash
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/Kilobyte4621/scripts/testing/install.sh)"
 ```
 
 ## ssh.sh
