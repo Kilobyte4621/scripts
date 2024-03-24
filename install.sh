@@ -1,18 +1,4 @@
 #!/bin/bash
-# Define variables to choose which software to install
-MOD_LID="yes"
-MOD_DNF="yes"
-INSTALL_SNAPPER="yes"
-INSTALL_DNF_PLUGINS="yes"
-INSTALL_DNF_AUTO="yes"
-INSTALL_NETWORK_MANAGER_TUI="yes"
-INSTALL_COCKPIT_NAVIGATOR="yes"
-INSTALL_NANO="yes"
-INSTALL_PORTAINER_DOCKER="yes"
-INSTALL_SYNCTHING="yes"
-ENABLE_VIRTUALIZATION="no"
-INSTALL_COCKPIT_MACHINES="yes"
-
 
 # Function to interactively redefine environment variables
 redefine_environment_variables() {
