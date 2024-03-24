@@ -1,7 +1,6 @@
 #!/bin/bash
 
 # Define variables to choose which software to install
-ADD_PW_FB="yes"
 INSTALL_SNAPPER="yes"
 INSTALL_DNF_PLUGINS="yes"
 INSTALL_DNF_AUTO="yes"
@@ -74,44 +73,6 @@ setup_firewall() {
     sudo firewall-cmd --reload
     echo "Services added to the firewall public zone successfully."
 }
-
-
-# Function to add ",pwfeedback" to the env_reset line in sudoers file
-add_pwfeedback_to_sudoers() {
-    local sudoers_file="/etc/sudoers"
-    
-    echo "Adding ',pwfeedback' to the env_reset line in sudoers file..."
-
-    # Check if the sudoers file exists
-    if [ ! -f "$sudoers_file" ]; then
-        echo "Error: sudoers file not found: $sudoers_file"
-        return 1
-    fi
-    
-    # Ensure the sudoers file is writable
-    if ! sudo -l >/dev/null 2>&1; then
-        echo "Error: You don't have permission to modify the sudoers file."
-        return 1
-    fi
-
-    # Backup original permissions
-    local original_permissions=$(stat -c "%a" "$sudoers_file")
-
-    # Temporarily change the file permissions to allow writing
-    sudo chmod +w "$sudoers_file"
-
-    # Add ",pwfeedback" to the env_reset line
-    if ! sudo sed -i 's/\(Defaults\s*env_reset\s*=\s*\)"/\1,pwfeedback"/' "$sudoers_file"; then
-        echo "Error: Failed to modify the sudoers file."
-        return 1
-    fi
-
-    # Restore original permissions
-    sudo chmod "$original_permissions" "$sudoers_file"
-
-    echo "'pwfeedback' added to the env_reset line in sudoers file successfully."
-}
-
 
 
 # Function to modify /etc/systemd/logind.conf
@@ -281,10 +242,6 @@ install_basic_packages() {
 
 # Main function to execute post-install tasks
 main() {
-    # Change password feedback
-    if [ "$ADD_PW_FB" == "yes" ]; then
-        add_pwfeedback_to_sudoers
-    fi
     
     # Modify logind_conf
     modify_logind_conf
