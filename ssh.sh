@@ -1,5 +1,7 @@
 #!/bin/bash
 
+sudo su
+
 # Backup sshd_config
 cp /etc/ssh/sshd_config /etc/ssh/sshd_config_backup
 
@@ -74,6 +76,8 @@ AllowUsers $users
 EOF
 
 echo "Hardened SSH configuration lines appended to sshd_config file."
+
+exit
 
 # Restart SSH service
 service sshd restart
