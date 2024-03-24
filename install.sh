@@ -1,15 +1,17 @@
 #!/bin/bash
 
 # Define variables to choose which software to install
-INSTALL_SNAPPER="no"
-INSTALL_DNF_PLUGINS="no"
-INSTALL_DNF_AUTO="no"
-INSTALL_NETWORK_MANAGER_TUI="no"
-INSTALL_COCKPIT_NAVIGATOR="no"
-INSTALL_NANO="no"
-INSTALL_PORTAINER_DOCKER="no"
-INSTALL_SYNCTHING="no"
-ENABLE_VIRTUALIZATION="yes"
+MOD_LID="yes"
+MOD_DNF="yes"
+INSTALL_SNAPPER="yes"
+INSTALL_DNF_PLUGINS="yes"
+INSTALL_DNF_AUTO="yes"
+INSTALL_NETWORK_MANAGER_TUI="yes"
+INSTALL_COCKPIT_NAVIGATOR="yes"
+INSTALL_NANO="yes"
+INSTALL_PORTAINER_DOCKER="yes"
+INSTALL_SYNCTHING="yes"
+ENABLE_VIRTUALIZATION="no"
 INSTALL_COCKPIT_MACHINES="yes"
 
 # Function to modify a file
@@ -301,13 +303,18 @@ install_basic_packages() {
 
 # Main function to execute post-install tasks
 main() {
+
     
     # Modify logind_conf
-    modify_logind_conf
-    
+    if [ "$MOD_LID" == "yes" ]; then
+        modify_logind_conf
+    fi
+        
     # Edit dnf_conf
-    edit_dnf_conf
-    
+    if [ "$MOD_DNF" == "yes" ]; then
+        edit_dnf_conf
+    fi
+        
     # Install additional software suites
     if [ "$INSTALL_SNAPPER" == "yes" ]; then
         install_snapper
