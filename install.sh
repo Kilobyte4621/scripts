@@ -1,14 +1,15 @@
 #!/bin/bash
-# Define variables to choose which software to install
-INSTALL_SNAPPER="yes"
-INSTALL_DNF_PLUGINS="yes"
-INSTALL_DNF_AUTO="yes"
-INSTALL_NETWORK_MANAGER_TUI="yes"
-INSTALL_COCKPIT_NAVIGATOR="yes"
-INSTALL_COCKPIT_MACHINES="no"
-INSTALL_NANO="yes"
-INSTALL_PORTAINER_DOCKER="yes"
-INSTALL_SYNCTHING="yes"
+
+# Default values for environment variables
+INSTALL_SNAPPER="${INSTALL_SNAPPER:-yes}"
+INSTALL_DNF_PLUGINS="${INSTALL_DNF_PLUGINS:-yes}"
+INSTALL_DNF_AUTO="${INSTALL_DNF_AUTO:-yes}"
+INSTALL_NETWORK_MANAGER_TUI="${INSTALL_NETWORK_MANAGER_TUI:-yes}"
+INSTALL_COCKPIT_NAVIGATOR="${INSTALL_COCKPIT_NAVIGATOR:-yes}"
+INSTALL_COCKPIT_MACHINES="${INSTALL_COCKPIT_MACHINES:-no}"
+INSTALL_NANO="${INSTALL_NANO:-yes}"
+INSTALL_PORTAINER_DOCKER="${INSTALL_PORTAINER_DOCKER:-yes}"
+INSTALL_SYNCTHING="${INSTALL_SYNCTHING:-yes}"
 
 # Function to interactively redefine environment variables
 redefine_environment_variables() {
@@ -28,8 +29,46 @@ redefine_environment_variables() {
     fi
 }
 
+# Function to parse command-line arguments
+parse_arguments() {
+    while [[ "$#" -gt 0 ]]; do
+        case $1 in
+            -h|--help)
+                echo "Usage: $0 [OPTIONS]"
+                echo "Options:"
+                echo "  -h, --help                    Show this help message"
+                echo "  --install-snapper <VALUE>     Set INSTALL_SNAPPER environment variable"
+                echo "  --install-dnf-plugins <VALUE> Set INSTALL_DNF_PLUGINS environment variable"
+                echo "  --install-dnf-auto <VALUE>    Set INSTALL_DNF_AUTO environment variable"
+                echo "  --install-network-manager-tui <VALUE> Set INSTALL_NETWORK_MANAGER_TUI environment variable"
+                echo "  --install-cockpit-navigator <VALUE> Set INSTALL_COCKPIT_NAVIGATOR environment variable"
+                echo "  --install-cockpit-machines <VALUE> Set INSTALL_COCKPIT_MACHINES environment variable"
+                echo "  --install-nano <VALUE>        Set INSTALL_NANO environment variable"
+                echo "  --install-portainer-docker <VALUE> Set INSTALL_PORTAINER_DOCKER environment variable"
+                echo "  --install-syncthing <VALUE>   Set INSTALL_SYNCTHING environment variable"
+                exit 0
+                ;;
+            --install-snapper) INSTALL_SNAPPER="$2"; shift ;;
+            --install-dnf-plugins) INSTALL_DNF_PLUGINS="$2"; shift ;;
+            --install-dnf-auto) INSTALL_DNF_AUTO="$2"; shift ;;
+            --install-network-manager-tui) INSTALL_NETWORK_MANAGER_TUI="$2"; shift ;;
+            --install-cockpit-navigator) INSTALL_COCKPIT_NAVIGATOR="$2"; shift ;;
+            --install-cockpit-machines) INSTALL_COCKPIT_MACHINES="$2"; shift ;;
+            --install-nano) INSTALL_NANO="$2"; shift ;;
+            --install-portainer-docker) INSTALL_PORTAINER_DOCKER="$2"; shift ;;
+            --install-syncthing) INSTALL_SYNCTHING="$2"; shift ;;
+            *) echo "Unknown option: $1"; exit 1 ;;
+        esac
+        shift
+    done
+}
+
 # Call the function to redefine environment variables interactively
 redefine_environment_variables
+
+# Parse command-line arguments
+parse
+
 
 # Function to modify a file
 modify_file() {
