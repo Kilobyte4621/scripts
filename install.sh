@@ -67,7 +67,7 @@ parse_arguments() {
 redefine_environment_variables
 
 # Parse command-line arguments
-parse
+parse_arguments "$@"
 
 
 # Function to modify a file
