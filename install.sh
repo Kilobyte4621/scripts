@@ -135,8 +135,8 @@ replace_mcelog() {
     # Disable MCE Log service
     sudo systemctl disable mcelog.service
     # Install RAS Daemon
-    sudo dnf install rasdaemon -y
-    sudo systemctl enable rasdaemon.service
+    sudo dnf install -y rasdaemon
+    sudo systemctl enable --now rasdaemon.service
 
 }
 
