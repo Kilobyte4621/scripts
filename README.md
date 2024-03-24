@@ -2,9 +2,6 @@
  scripts for linux desktops and servers
 
 # install.sh
-```
-curl -sSL https://raw.githubusercontent.com/Kilobyte4621/scripts/main/install.sh | bash
-```
 
 This is a post-installation script that optimizes Fedora Server installations. What does it do?
 
@@ -16,3 +13,12 @@ This is a post-installation script that optimizes Fedora Server installations. W
 - Installs nano
 - Installs Syncthing and configure firewall
 - Installs Docker root and Portainer and configure firewall
+
+## Stable branch:
+```
+curl -sSL https://raw.githubusercontent.com/Kilobyte4621/scripts/stable/install.sh | bash
+```
+## Testing branch:
+```
+curl -sSL https://raw.githubusercontent.com/Kilobyte4621/scripts/testing/install.sh | bash
+```
