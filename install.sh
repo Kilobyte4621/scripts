@@ -401,6 +401,9 @@ main() {
     # Reload any pending config changes
     sudo systemctl daemon-reload
 
+    # Take snapper snapshot after Post-Install script
+    sudo snapper create --desc "Snapshot After Post Installation Script"
+
     echo "Installation completed."
 }
 
