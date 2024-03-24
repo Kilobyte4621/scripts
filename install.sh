@@ -38,6 +38,21 @@ redefine_environment_variables() {
 # Call the function to redefine environment variables interactively
 redefine_environment_variables
 
+
+# Default values for environment variables
+MOD_LID="${MOD_LID:-yes}"
+MOD_DNF="${MOD_DNF:-yes}"
+INSTALL_SNAPPER="${INSTALL_SNAPPER:-yes}"
+INSTALL_DNF_PLUGINS="${INSTALL_DNF_PLUGINS:-yes}"
+INSTALL_DNF_AUTO="${INSTALL_DNF_AUTO:-yes}"
+INSTALL_NETWORK_MANAGER_TUI="${INSTALL_NETWORK_MANAGER_TUI:-yes}"
+INSTALL_COCKPIT_NAVIGATOR="${INSTALL_COCKPIT_NAVIGATOR:-yes}"
+INSTALL_NANO="${INSTALL_NANO:-yes}"
+INSTALL_PORTAINER_DOCKER="${INSTALL_PORTAINER_DOCKER:-yes}"
+INSTALL_SYNCTHING="${INSTALL_SYNCTHING:-yes}"
+ENABLE_VIRTUALIZATION="${ENABLE_VIRTUALIZATION:-no}"
+INSTALL_COCKPIT_MACHINES="${INSTALL_COCKPIT_MACHINES:-yes}"
+
 # Function to modify a file
 modify_file() {
     local file="$1"
